@@ -22,6 +22,7 @@ public class DataInitializer {
             Ruolo administratorRole = createRole(ruoloRepository, "Amministratore", Ruolo.ROLE_ADMINISTRATOR);
             Ruolo writerRole = createRole(ruoloRepository, "Writer", Ruolo.ROLE_WRITER);
             Ruolo reviewerRole = createRole(ruoloRepository, "Reviewer", Ruolo.ROLE_REVIEWER);
+            createRole(ruoloRepository, "Player", Ruolo.ROLE_PLAYER);
             createUser(utenteRepository, passwordEncoder, "Administrator", "System", "Administrator1", "Administrator_123", administratorRole);
             createUser(utenteRepository, passwordEncoder, "Writer", "System","Writer1", "Writer_123", writerRole);
             createUser(utenteRepository, passwordEncoder, "Reviewer", "System","Reviewer1", "organizer_123", reviewerRole);
