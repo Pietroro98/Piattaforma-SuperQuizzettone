@@ -1,0 +1,17 @@
+<div class="container-fluid px-0">
+  <nav class="navbar navbar-dark bg-primary px-3">
+
+    <button class="btn btn-light" (click)="toggleSidenav()">
+      <span *ngIf="!isOpen" class="bi bi-list"></span>
+      <span *ngIf="isOpen" class="bi bi-x"></span>
+    </button>
+
+    <button class="bi bi-book" routerLink="/home"></button>
+
+
+    <!-- <div class="avatar">
+      {{ getInitials(user?.name, user?.lastName),  }}
+    </div> -->
+
+  </nav>
+</div>
