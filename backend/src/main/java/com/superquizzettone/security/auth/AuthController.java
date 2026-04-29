@@ -2,7 +2,7 @@ package com.superquizzettone.security.auth;
 import com.superquizzettone.dto.ResponseJSON;
 import com.superquizzettone.model.Role;
 import com.superquizzettone.model.User;
-import com.superquizzettone.repository.ruolo.RuoloRepository;
+import com.superquizzettone.repository.ruolo.RoleRepository;
 import com.superquizzettone.repository.utente.UserRepository;
 import com.superquizzettone.security.JWTUtil;
 import com.superquizzettone.security.dto.*;
@@ -37,14 +37,14 @@ public class AuthController {
     private final AuthenticationManager authManager;
     private final UserService userService;
     private final UserRepository userRepository;
-    private final RuoloRepository ruoloRepository;
+    private final RoleRepository roleRepository;
 
-    public AuthController(JWTUtil jwtUtil, AuthenticationManager authManager, UserService userService, UserRepository userRepository, RuoloRepository ruoloRepository) {
+    public AuthController(JWTUtil jwtUtil, AuthenticationManager authManager, UserService userService, UserRepository userRepository, RoleRepository roleRepository) {
         this.jwtUtil = jwtUtil;
         this.authManager = authManager;
         this.userService = userService;
         this.userRepository = userRepository;
-        this.ruoloRepository = ruoloRepository;
+        this.roleRepository = roleRepository;
     }
 
 
@@ -75,7 +75,7 @@ public class AuthController {
             throw new BadRequestException("Attenzione, l'id non deve essere valorizzato in inserimento");
         }
 
-        Role defaultRole = ruoloRepository.findByCode(Role.ROLE_PLAYER)
+        Role defaultRole = roleRepository.findByCode(Role.ROLE_PLAYER)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ruolo PLAYER non configurato"));
 
         User entity = body.buildUtenteModel();
