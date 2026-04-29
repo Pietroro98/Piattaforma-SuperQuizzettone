@@ -1,5 +1,5 @@
 package com.superquizzettone.security.dto;
-import com.superquizzettone.model.Utente;
+import com.superquizzettone.model.User;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +13,10 @@ public class UtenteAuthRegisterDTO {
     private Long id;
 
     @NotBlank
-    private String nome;
+    private String name;
 
     @NotBlank
-    private String cognome;
+    private String surname;
 
     @NotBlank
     private String username;
@@ -24,10 +24,10 @@ public class UtenteAuthRegisterDTO {
     @NotBlank
     private String password;
 
-    public Utente buildUtenteModel() {
-        Utente model = new Utente();
-        model.setNome(nome);
-        model.setCognome(cognome);
+    public User buildUtenteModel() {
+        User model = new User();
+        model.setName(name);
+        model.setSurname(surname);
         model.setUsername(username);
         model.setPassword(password);
         return model;

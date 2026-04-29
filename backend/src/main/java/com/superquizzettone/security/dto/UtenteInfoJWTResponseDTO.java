@@ -1,7 +1,7 @@
 package com.superquizzettone.security.dto;
 import com.superquizzettone.model.Quiz;
 import com.superquizzettone.model.QuizPlayed;
-import com.superquizzettone.model.StatoUtente;
+import com.superquizzettone.model.UserState;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
@@ -15,13 +15,13 @@ public class UtenteInfoJWTResponseDTO {
     private String cognome;
     private String type = "Bearer";
     private String username;
-    private StatoUtente stato;
+    private UserState stato;
     private List<String> roles;
     private List<QuizPlayed> attempts;
     private LocalDate dataRegistrazione;
     private Double totalPoint;
 
-    public UtenteInfoJWTResponseDTO(String nome, String cognome, String username, StatoUtente stato, List<String> roles, List<QuizPlayed> attempts, LocalDate dataRegistrazione,Double totalPoint) {
+    public UtenteInfoJWTResponseDTO(String nome, String cognome, String username, UserState stato, List<String> roles, List<QuizPlayed> attempts, LocalDate dataRegistrazione, Double totalPoint) {
         this.nome = nome;
         this.cognome = cognome;
         this.username = username;

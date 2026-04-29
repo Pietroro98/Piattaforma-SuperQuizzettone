@@ -1,12 +1,12 @@
 package com.superquizzettone.web.api.apiinfo;
 import com.superquizzettone.dto.ResponseJSON;
-import com.superquizzettone.dto.UtenteDTO;
-import com.superquizzettone.dto.UtenteUpdateDTO;
-import com.superquizzettone.model.Ruolo;
-import com.superquizzettone.model.Utente;
+import com.superquizzettone.dto.UserDTO;
+import com.superquizzettone.dto.UserUpdateDTO;
+import com.superquizzettone.model.Role;
+import com.superquizzettone.model.User;
 import com.superquizzettone.security.dto.ChangePasswordDTO;
 import com.superquizzettone.security.dto.UtenteInfoJWTResponseDTO;
-import com.superquizzettone.service.utente.UtenteService;
+import com.superquizzettone.service.utente.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,10 +17,10 @@ import java.util.List;
 @RequestMapping("/api/utente")
 public class UserInfo {
 
-    private final UtenteService utenteService;
+    private final UserService userService;
 
-    public UserInfo(UtenteService utenteService) {
-        this.utenteService = utenteService;
+    public UserInfo(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/testSoloAdmin")
@@ -31,18 +31,18 @@ public class UserInfo {
     @GetMapping("/userInfo")
     public ResponseEntity<ResponseJSON<UtenteInfoJWTResponseDTO>> getUserInfo() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Utente utenteLoggato = utenteService.findByUsername(username);
-        List<String> ruoli = utenteLoggato.getRuoli().stream().map(Ruolo::getCodice).toList();
+        User userLoggato = userService.findByUsername(username);
+        List<String> ruoli = userLoggato.getRoles().stream().map(Role::getCode).toList();
 
         UtenteInfoJWTResponseDTO responseData = new UtenteInfoJWTResponseDTO(
-                utenteLoggato.getNome(),
-                utenteLoggato.getCognome(),
-                utenteLoggato.getUsername(),
-                utenteLoggato.getStato(),
+                userLoggato.getName(),
+                userLoggato.getUsername(),
+                userLoggato.getUsername(),
+                userLoggato.getState(),
                 ruoli,
-                utenteLoggato.getAttempts(),
-                utenteLoggato.getDataRegistrazione(),
-                utenteLoggato.getTotalPoints()
+                userLoggato.getAttempts(),
+                userLoggato.getCreationDate(),
+                userLoggato.getTotalPoints()
         );
 
         return ResponseEntity.ok(
@@ -52,7 +52,7 @@ public class UserInfo {
 
     @PutMapping("/changePassword")
     public ResponseEntity<ResponseJSON<Void>> changePassword(@RequestBody @Valid ChangePasswordDTO body) {
-        utenteService.changePassword(body.getCurrentPassword(), body.getNewPassword(), body.getConfirmPassword());
+        userService.changePassword(body.getCurrentPassword(), body.getNewPassword(), body.getConfirmPassword());
 
         return ResponseEntity.ok(
                 ResponseJSON.success(200, "Password modificata con successo.", null)
@@ -60,9 +60,9 @@ public class UserInfo {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<ResponseJSON<UtenteDTO>> updateMe(@RequestBody @Valid UtenteUpdateDTO body) {
-        Utente utenteAggiornato = utenteService.aggiornaProfilo(body);
-        UtenteDTO responseData = UtenteDTO.buildUtenteDTOFromModel(utenteAggiornato);
+    public ResponseEntity<ResponseJSON<UserDTO>> updateMe(@RequestBody @Valid UserUpdateDTO body) {
+        User userAggiornato = userService.aggiornaProfilo(body);
+        UserDTO responseData = UserDTO.buildUtenteDTOFromModel(userAggiornato);
 
         return ResponseEntity.ok(
                 ResponseJSON.success(200, "Profilo aggiornato con successo.", responseData)

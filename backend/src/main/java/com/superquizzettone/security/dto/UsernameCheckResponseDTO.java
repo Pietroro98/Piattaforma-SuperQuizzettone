@@ -10,13 +10,13 @@ import java.util.List;
 public class UsernameCheckResponseDTO {
 
     private boolean available;
-    private List<String> suggeriti;
+    private List<String> suggestions;
 
     public UsernameCheckResponseDTO() {
     }
 
-    public UsernameCheckResponseDTO(boolean available, List<String> suggeriti) {
+    public UsernameCheckResponseDTO(boolean available, List<String> suggestions) {
         this.available = available;
-        this.suggeriti = suggeriti;
+        this.suggestions = suggestions;
     }
 }
