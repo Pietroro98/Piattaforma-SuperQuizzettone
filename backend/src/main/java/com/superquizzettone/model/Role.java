@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Ruolo {
+public class Role {
 
     public static final String ROLE_ADMINISTRATOR = "ROLE_ADMINISTRATOR";
     public static final String ROLE_PLAYER = "ROLE_PLAYER";
@@ -20,18 +20,17 @@ public class Ruolo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "descrizione")
-    private String descrizione;
+    @Column(name = "description")
+    private String description;
 
-    @Column(name = "codice", unique = true, nullable = false)
-    private String codice;
+    @Column(name = "code", unique = true, nullable = false)
+    private String code;
 
-    public Ruolo(Long id) {
+    public Role(Long id) {
         this.id = id;
     }
-
-    public Ruolo(String descrizione, String codice) {
-        this.descrizione = descrizione;
-        this.codice = codice;
+    public Role(String description, String code) {
+        this.description = description;
+        this.code = code;
     }
 }
