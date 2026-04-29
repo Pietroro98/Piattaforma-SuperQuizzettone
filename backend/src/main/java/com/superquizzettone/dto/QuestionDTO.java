@@ -3,6 +3,10 @@ package com.superquizzettone.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.superquizzettone.model.Category;
 import com.superquizzettone.model.Question;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,8 +22,16 @@ import java.util.stream.Collectors;
 public class QuestionDTO {
 
     private Long id;
+
+    @NotBlank(message = "description non può essere vuota")
     private String description;
+
+    @NotNull(message = "answers non può essere nullo")
+    @Size(min = 2, message = "answers deve contenere almeno 2 elementi")
+    @Valid
     private List<AnswerDTO> answers;
+
+    @NotNull(message = "category non può essere nullo")
     private Category category;
     private String tag;
     private String motivationRejection;
