@@ -16,11 +16,11 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "descrizione")
+    @Column(name = "description")
     private String description;
 
     @Column(name = "correct", nullable = false)
-    private boolean correct;
+    private boolean isCorrect;
 
     @ManyToOne
     @JoinColumn(name = "question_id", nullable = false)

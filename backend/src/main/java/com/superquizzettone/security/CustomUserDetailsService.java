@@ -1,11 +1,10 @@
 package com.superquizzettone.security;
 
-import com.superquizzettone.model.Utente;
-import com.superquizzettone.repository.utente.UtenteRepository;
+import com.superquizzettone.model.User;
+import com.superquizzettone.repository.utente.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,26 +16,26 @@ import java.util.Collection;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UtenteRepository utenteRepository;
+    private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Utente utente = utenteRepository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato con username: " + username));
 
-        return new User(
-            utente.getUsername(),
-            utente.getPassword(),
-            utente.isAttivo(),
+        return new org.springframework.security.core.userdetails.User(
+            user.getUsername(),
+            user.getPassword(),
+            user.isActive(),
             true,
             true,
-            !utente.isDisabilitato(),
-            getAuthorities(utente)
+            !user.isDisabled(),
+            getAuthorities(user)
         );
     }
 
-    private static Collection<? extends GrantedAuthority> getAuthorities(Utente utente) {
-        String[] authorities = utente.getRuoli().stream().map(item -> item.getCodice()).toArray(String[]::new);
+    private static Collection<? extends GrantedAuthority> getAuthorities(User user) {
+        String[] authorities = user.getRoles().stream().map(item -> item.getCode()).toArray(String[]::new);
         return AuthorityUtils.createAuthorityList(authorities);
     }
 }

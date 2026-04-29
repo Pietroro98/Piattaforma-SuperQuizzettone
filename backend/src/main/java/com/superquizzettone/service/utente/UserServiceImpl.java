@@ -1,8 +1,8 @@
 package com.superquizzettone.service.utente;
-import com.superquizzettone.dto.UtenteUpdateDTO;
+import com.superquizzettone.dto.UserUpdateDTO;
 import com.superquizzettone.model.*;
 import com.superquizzettone.repository.ruolo.RuoloRepository;
-import com.superquizzettone.repository.utente.UtenteRepository;
+import com.superquizzettone.repository.utente.UserRepository;
 import com.superquizzettone.security.SecurityUtils;
 import com.superquizzettone.web.api.exception.BadRequestException;
 import com.superquizzettone.web.api.exception.ForbiddenException;
@@ -17,62 +17,62 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UtenteServiceImpl implements UtenteService {
+public class UserServiceImpl implements UserService {
 
-    private final UtenteRepository utenteRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RuoloRepository ruoloRepository;
 
-    public UtenteServiceImpl(UtenteRepository utenteRepository, PasswordEncoder passwordEncoder,
-                             RuoloRepository ruoloRepository) {
-        this.utenteRepository = utenteRepository;
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                           RuoloRepository ruoloRepository) {
+        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.ruoloRepository = ruoloRepository;
     }
 
     @Override
-    public List<Utente> listAllUtenti() {
-        return (List<Utente>) utenteRepository.findAll();
+    public List<User> listAllUtenti() {
+        return (List<User>) userRepository.findAll();
     }
 
     @Override
-    public Utente caricaSingoloUtente(Long id) {
-        return utenteRepository.findById(id).orElse(null);
+    public User caricaSingoloUtente(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Utente caricaSingoloUtenteConRuoli(Long id) {
-        return utenteRepository.findByIdConRuoli(id).orElse(null);
+    public User caricaSingoloUtenteConRuoli(Long id) {
+        return userRepository.findByIdConRuoli(id).orElse(null);
     }
 
     @Override
     @Transactional
-    public Utente aggiorna(Utente utenteInstance, List<Ruolo> ruoliItem) {
-        Utente utenteReloaded = utenteRepository.findById(utenteInstance.getId()).orElse(null);
-        if (utenteReloaded == null) {
+    public User aggiorna(User userInstance, List<Role> ruoliItem) {
+        User userReloaded = userRepository.findById(userInstance.getId()).orElse(null);
+        if (userReloaded == null) {
             throw new RuntimeException("Elemento non trovato");
         }
 
         boolean isAdmin = SecurityUtils.isAdministrator();
         String usernameLoggato = SecurityUtils.getUsername();
 
-        if (!isAdmin && !usernameLoggato.equals(utenteReloaded.getUsername())) {
+        if (!isAdmin && !usernameLoggato.equals(userReloaded.getUsername())) {
             throw new ForbiddenException(usernameLoggato);
         }
 
-        utenteReloaded.setNome(utenteInstance.getNome());
-        utenteReloaded.setCognome(utenteInstance.getCognome());
-        utenteReloaded.setUsername(utenteInstance.getUsername());
+        userReloaded.setName(userInstance.getName());
+        userReloaded.setUsername(userInstance.getUsername());
+        userReloaded.setUsername(userInstance.getUsername());
 
         if (!isAdmin) {
-            return utenteRepository.save(utenteReloaded);
+            return userRepository.save(userReloaded);
         }
 
         if (ruoliItem == null || ruoliItem.isEmpty()) {
             throw new BadRequestException("Devi specificare almeno un ruolo");
         }
 
-        Set<Ruolo> ruoliValidi = ruoliItem
+        Set<Role> ruoliValidi = ruoliItem
                 .stream()
                 .map(ruoloInput -> {
                     if (ruoloInput.getId() == null) {
@@ -86,31 +86,31 @@ public class UtenteServiceImpl implements UtenteService {
 
         boolean contieneAdmin = ruoliValidi.stream()
                 .anyMatch(ruolo ->
-                        Ruolo.ROLE_ADMINISTRATOR.equals(ruolo.getCodice())
+                        Role.ROLE_ADMINISTRATOR.equals(ruolo.getCode())
                 );
 
         if (contieneAdmin) {
             throw new NotAllowedException("Non è consentito assegnare il ruolo ADMIN");
         }
 
-        utenteReloaded.setRuoli(ruoliValidi);
+        userReloaded.setRoles(ruoliValidi);
 
-        return utenteRepository.save(utenteReloaded);
+        return userRepository.save(userReloaded);
     }
 
     @Override
-    public Utente inserisciNuovo(Utente entity)
+    public User inserisciNuovo(User entity)
     {
-        entity.setStato(StatoUtente.ATTIVO);
+        entity.setState(UserState.ATTIVO);
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
-        entity.setDataRegistrazione(LocalDate.now());
+        entity.setCreationDate(LocalDate.now());
         entity.setTotalPoints(0d);
 
-        if (entity.getRuoli() == null || entity.getRuoli().isEmpty()) {
+        if (entity.getRoles() == null || entity.getRoles().isEmpty()) {
             throw new RuntimeException("L'utente deve avere almeno un ruolo.");
         }
 
-        Set<Ruolo> ruoliValidi = entity.getRuoli().stream()
+        Set<Role> ruoliValidi = entity.getRoles().stream()
                 .map(ruoloInput -> ruoloRepository.findById(ruoloInput.getId())
                         .orElseThrow(() -> new BadRequestException(
                                 "Ruolo non valido con id: " + ruoloInput.getId())))
@@ -118,61 +118,60 @@ public class UtenteServiceImpl implements UtenteService {
 
         boolean contieneRuoloNonConsentito = ruoliValidi.stream()
                 .anyMatch(ruolo ->
-                        !Ruolo.ROLE_ADMINISTRATOR.equals(ruolo.getCodice()) &&
-                                !Ruolo.ROLE_PLAYER.equals(ruolo.getCodice())
+                        !Role.ROLE_ADMINISTRATOR.equals(ruolo.getCode()) &&
+                                !Role.ROLE_PLAYER.equals(ruolo.getCode())
                 );
 
         if (contieneRuoloNonConsentito) {
             throw new NotAllowedException("L'admin può creare solo utenti con ruolo PLAYER, WRITER, REVIEWER");
         }
 
-        entity.setRuoli(ruoliValidi);
+        entity.setRoles(ruoliValidi);
 
-        return utenteRepository.save(entity);
+        return userRepository.save(entity);
     }
 
     @Override
-    public Utente disabilita(Long id) {
-        Utente entity = caricaSingoloUtente(id);
+    public User disabilita(Long id) {
+        User entity = caricaSingoloUtente(id);
         if (entity == null) {
             throw new RuntimeException("Elemento non trovato.");
         }
-        entity.setStato(StatoUtente.DISABILITATO);
-        return utenteRepository.save(entity);
+        entity.setState(UserState.DISABILITATO);
+        return userRepository.save(entity);
     }
 
     @Override
-    public Utente findByUsernameAndPassword(String username, String password) {
-        return utenteRepository.findByUsernameAndPassword(username, password);
+    public User findByUsernameAndPassword(String username, String password) {
+        return userRepository.findByUsernameAndPassword(username, password);
     }
 
     @Override
-    public Utente findByUsername(String username) {
-        return utenteRepository.findByUsername(username).orElse(null);
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
     }
 
     @Override
     @Transactional
-    public Utente aggiornaProfilo(UtenteUpdateDTO utenteUpdateDTO) {
+    public User aggiornaProfilo(UserUpdateDTO userUpdateDTO) {
         String username = SecurityUtils.getUsername();
-        Utente utente = utenteRepository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("Utente autenticato non trovato."));
 
-        utente.setNome(utenteUpdateDTO.getNome());
-        utente.setCognome(utenteUpdateDTO.getCognome());
-        utente.setUsername(utenteUpdateDTO.getUsername());
+        user.setName(userUpdateDTO.getName());
+        user.setUsername(userUpdateDTO.getSurname());
 
-        return utenteRepository.save(utente);
+        return userRepository.save(user);
     }
 
     @Override
     @Transactional
     public void changePassword(String currentPassword, String newPassword, String confirmPassword) {
         String username = SecurityUtils.getUsername();
-        Utente utente = utenteRepository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("Utente autenticato non trovato."));
 
-        if (!passwordEncoder.matches(currentPassword, utente.getPassword())) {
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new BadRequestException("La password attuale non è corretta.");
         }
 
@@ -184,7 +183,7 @@ public class UtenteServiceImpl implements UtenteService {
             throw new BadRequestException("La nuova password deve essere diversa da quella attuale.");
         }
 
-        utente.setPassword(passwordEncoder.encode(newPassword));
-        utenteRepository.save(utente);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }

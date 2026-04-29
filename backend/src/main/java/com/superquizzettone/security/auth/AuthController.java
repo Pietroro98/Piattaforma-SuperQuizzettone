@@ -1,15 +1,14 @@
 package com.superquizzettone.security.auth;
 import com.superquizzettone.dto.ResponseJSON;
-import com.superquizzettone.model.Ruolo;
-import com.superquizzettone.model.Utente;
+import com.superquizzettone.model.Role;
+import com.superquizzettone.model.User;
 import com.superquizzettone.repository.ruolo.RuoloRepository;
-import com.superquizzettone.repository.utente.UtenteRepository;
+import com.superquizzettone.repository.utente.UserRepository;
 import com.superquizzettone.security.JWTUtil;
 import com.superquizzettone.security.dto.*;
-import com.superquizzettone.service.utente.UtenteService;
+import com.superquizzettone.service.utente.UserService;
 import com.superquizzettone.web.api.exception.BadRequestException;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,15 +30,15 @@ public class AuthController {
 
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authManager;
-    private final UtenteService utenteService;
-    private final UtenteRepository utenteRepository;
+    private final UserService userService;
+    private final UserRepository userRepository;
     private final RuoloRepository ruoloRepository;
 
-    public AuthController(JWTUtil jwtUtil, AuthenticationManager authManager, UtenteService utenteService, UtenteRepository utenteRepository, RuoloRepository ruoloRepository) {
+    public AuthController(JWTUtil jwtUtil, AuthenticationManager authManager, UserService userService, UserRepository userRepository, RuoloRepository ruoloRepository) {
         this.jwtUtil = jwtUtil;
         this.authManager = authManager;
-        this.utenteService = utenteService;
-        this.utenteRepository = utenteRepository;
+        this.userService = userService;
+        this.userRepository = userRepository;
         this.ruoloRepository = ruoloRepository;
     }
 
@@ -70,12 +69,12 @@ public class AuthController {
             throw new BadRequestException("Attenzione, l'id non deve essere valorizzato in inserimento");
         }
 
-        Ruolo defaultRole = ruoloRepository.findByCodice(Ruolo.ROLE_PLAYER)
+        Role defaultRole = ruoloRepository.findByCode(Role.ROLE_PLAYER)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ruolo PLAYER non configurato"));
 
-        Utente entity = body.buildUtenteModel();
-        entity.setRuoli(Set.of(defaultRole));
-        utenteService.inserisciNuovo(entity);
+        User entity = body.buildUtenteModel();
+        entity.setRoles(Set.of(defaultRole));
+        userService.inserisciNuovo(entity);
 
         String token = jwtUtil.generateToken(entity.getUsername());
 
@@ -85,7 +84,7 @@ public class AuthController {
 
     @PostMapping("/check-username")
     public ResponseEntity<ResponseJSON<UsernameCheckResponseDTO>> usernameCheck(@RequestBody @Valid UsernameRegisterCheckDTO body) {
-        boolean exists = utenteRepository.existsByUsername(body.getUsername());
+        boolean exists = userRepository.existsByUsername(body.getUsername());
 
         if (exists) {
             UsernameCheckResponseDTO responseData =
@@ -129,7 +128,7 @@ public class AuthController {
         );
 
         return candidates.stream()
-                .filter(candidate -> !utenteRepository.existsByUsername(candidate))
+                .filter(candidate -> !userRepository.existsByUsername(candidate))
                 .limit(MAX_SUGGERITI)
                 .toList();
     }

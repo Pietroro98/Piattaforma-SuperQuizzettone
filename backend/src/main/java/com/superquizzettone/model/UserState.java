@@ -1,6 +1,6 @@
 package com.superquizzettone.model;
 
-public enum StatoUtente {
+public enum UserState {
     ATTIVO,
     DISABILITATO
 }

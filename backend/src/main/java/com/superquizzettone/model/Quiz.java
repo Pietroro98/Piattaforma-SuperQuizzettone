@@ -22,7 +22,7 @@ public class Quiz {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "descrizione")
+    @Column(name = "description")
     private String description;
 
     @Column(name = "name", unique = true, nullable = false)
