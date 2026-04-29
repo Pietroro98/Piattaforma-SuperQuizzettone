@@ -37,7 +37,7 @@ input::placeholder {
 
 .password-field {
   position: relative;
-   width: 100%; 
+  width: 100%;
 }
 
 .password-field button {
@@ -88,4 +88,5 @@ input::placeholder {
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;
+  cursor: pointer;
 }
