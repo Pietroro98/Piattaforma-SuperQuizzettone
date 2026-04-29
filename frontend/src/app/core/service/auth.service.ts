@@ -32,9 +32,9 @@ export class AuthService {
     return this.http.post<any>(`${this.baseUrl}/auth/login`, payload).pipe(
       tap(response => {
         console.log(response),
-          this.storage.set('token', response.accessToken),
-          this.storage.set('username', response.username),
-          this.storage.set('roles', response.roles),
+          this.storage.set('token', response.data.token),
+          this.storage.set('username', response.data.username),
+          //this.storage.set('roles', response.data.roles),
           this.currentUserSubject.next(null)
       }
       )
