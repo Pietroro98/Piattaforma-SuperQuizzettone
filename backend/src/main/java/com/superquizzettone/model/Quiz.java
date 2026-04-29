@@ -1,12 +1,12 @@
 package com.superquizzettone.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Duration;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +34,8 @@ public class Quiz {
     private List<Question> questions = new ArrayList<>();
 
     @Column(name = "quiz_time")
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private Duration quizTime;
 
     @Column(name = "total_points")
@@ -49,4 +51,40 @@ public class Quiz {
 
     @OneToMany(mappedBy = "quiz")
     private List<QuizPlayed> attempts = new ArrayList<>();
+
+    public String getQuizTime() {
+        if (quizTime == null) {
+            return null;
+        }
+
+        long totalSeconds = quizTime.getSeconds();
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
+    public void setQuizTime(String quizTime) {
+        this.quizTime = parseMinutesSeconds(quizTime);
+    }
+
+    public static Duration parseMinutesSeconds(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
+        String[] parts = value.split(":");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Formato durata non valido. Atteso mm:ss");
+        }
+
+        long minutes = Long.parseLong(parts[0]);
+        long seconds = Long.parseLong(parts[1]);
+
+        if (seconds < 0 || seconds > 59) {
+            throw new IllegalArgumentException("I secondi devono essere tra 00 e 59");
+        }
+
+        return Duration.ofMinutes(minutes).plusSeconds(seconds);
+    }
 }
