@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,9 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+    //scrivo una riga a livello informativo nei log del backend quando authenticate() della security fallisce
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authManager;
@@ -58,6 +63,7 @@ public class AuthController {
                     ResponseJSON.success(200, "Login effettuato con successo", responseData)
             );
         } catch (AuthenticationException authExc) {
+            log.warn("Login fallito per username '{}': {}", body.getUsername(), authExc.getClass().getSimpleName());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Login Credentials");
         }
     }
