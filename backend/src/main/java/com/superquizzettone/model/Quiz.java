@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,7 +34,7 @@ public class Quiz {
     private List<Question> questions = new ArrayList<>();
 
     @Column(name = "quiz_time")
-    private LocalTime quizTime;
+    private Duration quizTime;
 
     @Column(name = "total_points")
     private Double totalPoints;
