@@ -1,7 +1,7 @@
 package com.superquizzettone.service.utente;
 import com.superquizzettone.dto.UserUpdateDTO;
 import com.superquizzettone.model.*;
-import com.superquizzettone.repository.ruolo.RuoloRepository;
+import com.superquizzettone.repository.ruolo.RoleRepository;
 import com.superquizzettone.repository.utente.UserRepository;
 import com.superquizzettone.security.SecurityUtils;
 import com.superquizzettone.web.api.exception.BadRequestException;
@@ -21,13 +21,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RuoloRepository ruoloRepository;
+    private final RoleRepository roleRepository;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                           RuoloRepository ruoloRepository) {
+                           RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.ruoloRepository = ruoloRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
                         throw new BadRequestException("Ogni ruolo deve avere un id");
                     }
 
-                    return ruoloRepository.findById(ruoloInput.getId())
+                    return roleRepository.findById(ruoloInput.getId())
                             .orElseThrow(() -> new BadRequestException(
                                     "Ruolo non valido con id: " + ruoloInput.getId()));
                 }).collect(Collectors.toSet());
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
         }
 
         Set<Role> ruoliValidi = entity.getRoles().stream()
-                .map(ruoloInput -> ruoloRepository.findById(ruoloInput.getId())
+                .map(ruoloInput -> roleRepository.findById(ruoloInput.getId())
                         .orElseThrow(() -> new BadRequestException(
                                 "Ruolo non valido con id: " + ruoloInput.getId())))
                 .collect(Collectors.toSet());

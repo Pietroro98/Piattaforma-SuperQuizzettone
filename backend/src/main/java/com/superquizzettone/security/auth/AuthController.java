@@ -2,7 +2,7 @@ package com.superquizzettone.security.auth;
 import com.superquizzettone.dto.ResponseJSON;
 import com.superquizzettone.model.Role;
 import com.superquizzettone.model.User;
-import com.superquizzettone.repository.ruolo.RuoloRepository;
+import com.superquizzettone.repository.ruolo.RoleRepository;
 import com.superquizzettone.repository.utente.UserRepository;
 import com.superquizzettone.security.JWTUtil;
 import com.superquizzettone.security.dto.*;
@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,18 +30,21 @@ import java.util.Set;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    //scrivo una riga a livello informativo nei log del backend quando authenticate() della security fallisce
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authManager;
     private final UserService userService;
     private final UserRepository userRepository;
-    private final RuoloRepository ruoloRepository;
+    private final RoleRepository roleRepository;
 
-    public AuthController(JWTUtil jwtUtil, AuthenticationManager authManager, UserService userService, UserRepository userRepository, RuoloRepository ruoloRepository) {
+    public AuthController(JWTUtil jwtUtil, AuthenticationManager authManager, UserService userService, UserRepository userRepository, RoleRepository roleRepository) {
         this.jwtUtil = jwtUtil;
         this.authManager = authManager;
         this.userService = userService;
         this.userRepository = userRepository;
-        this.ruoloRepository = ruoloRepository;
+        this.roleRepository = roleRepository;
     }
 
 
@@ -58,6 +63,7 @@ public class AuthController {
                     ResponseJSON.success(200, "Login effettuato con successo", responseData)
             );
         } catch (AuthenticationException authExc) {
+            log.warn("Login fallito per username '{}': {}", body.getUsername(), authExc.getClass().getSimpleName());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Login Credentials");
         }
     }
@@ -69,7 +75,7 @@ public class AuthController {
             throw new BadRequestException("Attenzione, l'id non deve essere valorizzato in inserimento");
         }
 
-        Role defaultRole = ruoloRepository.findByCode(Role.ROLE_PLAYER)
+        Role defaultRole = roleRepository.findByCode(Role.ROLE_PLAYER)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ruolo PLAYER non configurato"));
 
         User entity = body.buildUtenteModel();
