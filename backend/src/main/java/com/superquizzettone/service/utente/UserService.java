@@ -1,4 +1,5 @@
 package com.superquizzettone.service.utente;
+import com.superquizzettone.dto.AdministratorUserUpdateDTO;
 import com.superquizzettone.dto.UserUpdateDTO;
 import com.superquizzettone.model.Role;
 import com.superquizzettone.model.User;
@@ -15,4 +16,5 @@ public interface UserService {
     User findByUsername(String username);
     User aggiornaProfilo(UserUpdateDTO userUpdateDTO);
     void changePassword(String currentPassword, String newPassword, String confirmPassword);
+    User aggiornaComeAdmin(AdministratorUserUpdateDTO userUpdateDTO, Long id);
 }

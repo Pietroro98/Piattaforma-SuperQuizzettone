@@ -1,7 +1,8 @@
 package com.superquizzettone.service.utente;
+import com.superquizzettone.dto.AdministratorUserUpdateDTO;
 import com.superquizzettone.dto.UserUpdateDTO;
 import com.superquizzettone.model.*;
-import com.superquizzettone.repository.ruolo.RuoloRepository;
+import com.superquizzettone.repository.ruolo.RoleRepository;
 import com.superquizzettone.repository.utente.UserRepository;
 import com.superquizzettone.security.SecurityUtils;
 import com.superquizzettone.web.api.exception.BadRequestException;
@@ -21,13 +22,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RuoloRepository ruoloRepository;
+    private final RoleRepository roleRepository;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                           RuoloRepository ruoloRepository) {
+                           RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.ruoloRepository = ruoloRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -79,7 +80,7 @@ public class UserServiceImpl implements UserService {
                         throw new BadRequestException("Ogni ruolo deve avere un id");
                     }
 
-                    return ruoloRepository.findById(ruoloInput.getId())
+                    return roleRepository.findById(ruoloInput.getId())
                             .orElseThrow(() -> new BadRequestException(
                                     "Ruolo non valido con id: " + ruoloInput.getId()));
                 }).collect(Collectors.toSet());
@@ -99,6 +100,61 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
+    public User aggiornaComeAdmin(AdministratorUserUpdateDTO userUpdateDTO, Long id) {
+        User utenteReloaded = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Elemento non trovato."));
+        String usernameLoggato = SecurityUtils.getUsername();
+
+        if (utenteReloaded.isAdmin() && !usernameLoggato.equals(utenteReloaded.getUsername())) {
+            throw new ForbiddenException("Non puoi modificare un altro utente admin.");
+        }
+
+        utenteReloaded.setName(userUpdateDTO.getName());
+        utenteReloaded.setSurname(userUpdateDTO.getSurname());
+        utenteReloaded.setUsername(userUpdateDTO.getUsername());
+        utenteReloaded.setState(userUpdateDTO.getState());
+        utenteReloaded.setCreationDate(userUpdateDTO.getCreationDate());
+        utenteReloaded.setTotalPoints(userUpdateDTO.getTotalPoints());
+
+        if (userUpdateDTO.getAttempts() != null) {
+            utenteReloaded.setAttempts(userUpdateDTO.getAttempts());
+        }
+
+        if (userUpdateDTO.getPassword() != null && !userUpdateDTO.getPassword().isBlank()) {
+            utenteReloaded.setPassword(passwordEncoder.encode(userUpdateDTO.getPassword()));
+        }
+
+        if (userUpdateDTO.getRoles() == null || userUpdateDTO.getRoles().isEmpty()) {
+            throw new BadRequestException("Devi specificare almeno un ruolo");
+        }
+
+        Set<Role> ruoliValidi = userUpdateDTO.getRoles()
+                .stream()
+                .map(ruoloInput -> {
+                    if (ruoloInput.getId() == null) {
+                        throw new BadRequestException("Ogni ruolo deve avere un id");
+                    }
+
+                    return roleRepository.findById(ruoloInput.getId())
+                            .orElseThrow(() -> new BadRequestException(
+                                    "Ruolo non valido con id: " + ruoloInput.getId()));
+                }).collect(Collectors.toSet());
+
+        boolean contieneAdmin = ruoliValidi.stream()
+                .anyMatch(ruolo -> Role.ROLE_ADMINISTRATOR.equals(ruolo.getCode()));
+
+        if (contieneAdmin && !utenteReloaded.isAdmin()) {
+            throw new NotAllowedException("Non è consentito assegnare il ruolo ADMIN");
+        }
+
+        utenteReloaded.setRoles(ruoliValidi);
+
+        return userRepository.save(utenteReloaded);
+    }
+
+    @Override
+    @Transactional
     public User inserisciNuovo(User entity)
     {
         entity.setState(UserState.ATTIVO);
@@ -111,7 +167,7 @@ public class UserServiceImpl implements UserService {
         }
 
         Set<Role> ruoliValidi = entity.getRoles().stream()
-                .map(ruoloInput -> ruoloRepository.findById(ruoloInput.getId())
+                .map(ruoloInput -> roleRepository.findById(ruoloInput.getId())
                         .orElseThrow(() -> new BadRequestException(
                                 "Ruolo non valido con id: " + ruoloInput.getId())))
                 .collect(Collectors.toSet());
