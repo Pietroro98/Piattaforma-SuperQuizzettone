@@ -154,6 +154,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User inserisciNuovo(User entity)
     {
         entity.setState(UserState.ATTIVO);
