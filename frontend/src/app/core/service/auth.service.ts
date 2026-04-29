@@ -32,7 +32,8 @@ export class AuthService {
   login(payload: LoginPayload): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/auth/login`, payload).pipe(
       tap(response => {
-        console.log(response),
+        console.log(response)
+        console.log(response.data)
           this.storage.set('token', response.data.token),
           this.storage.set('username', response.data.username),
           //this.storage.set('roles', response.data.roles),
@@ -85,10 +86,8 @@ export class AuthService {
     return this.storage.get<string>('username');
   }
 
-  getCurrentUserNameAndLastName(): Observable<string[] | null> {
-    return this.currentUser$.pipe(
-      map(user => user ? [user.name, user.surname] : null)
-    )
+  getCurrentUserNameAndLastName() {
+    return this.http.get<AuthResponse>(`${this.baseUrl}/utente/userInfo`);
   }
 
 }
