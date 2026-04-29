@@ -74,4 +74,9 @@ public class User {
     public boolean isDisabled() {
         return state != null && state.equals(UserState.DISABILITATO);
     }
+
+    public boolean isAdmin() {
+        return roles != null && roles.stream()
+                .anyMatch(role -> Role.ROLE_ADMINISTRATOR.equals(role.getCode()));
+    }
 }
