@@ -1,4 +1,5 @@
 package com.superquizzettone.web.api;
+import com.superquizzettone.dto.AdministratorUserUpdateDTO;
 import com.superquizzettone.dto.ResponseJSON;
 import com.superquizzettone.dto.UserDTO;
 import com.superquizzettone.model.User;
@@ -58,4 +59,29 @@ public class AdministratorUserController {
                 .body(ResponseJSON.success(201, "Utente creato con successo.", responseData));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseJSON<UserDTO>> update(@PathVariable Long id, @RequestBody @Valid AdministratorUserUpdateDTO utenteInput) {
+        User utenteEsistente = userService.caricaSingoloUtente(id);
+        if (utenteEsistente == null) {
+            return ResponseEntity.notFound().build();
+        }
+        User utenteAggiornato = userService.aggiornaComeAdmin(utenteInput, id);
+        UserDTO responseData = UserDTO.buildUtenteDTOFromModel(utenteAggiornato);
+
+        return ResponseEntity.ok(
+                ResponseJSON.success(200, "Utente aggiornato con successo.", responseData)
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseJSON<UserDTO>> disabilita(@PathVariable Long id) {
+        User utenteEsistente = userService.caricaSingoloUtente(id);
+        if (utenteEsistente == null) {
+            return ResponseEntity.notFound().build();
+        }
+        userService.disabilita(id);
+        return ResponseEntity.ok(
+                ResponseJSON.success(200, "Utente disabilitato con successo.", null)
+        );
+    }
 }

@@ -1,0 +1,110 @@
+.auth-page {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 52% 48%;
+    background: #ffffff;
+}
+
+.auth-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background:
+        linear-gradient(90deg,
+            rgba(36, 58, 166, 0.92),
+            rgba(52, 82, 190, 0.82)),
+        url(../../../../public/sfondo-libro.png) center / cover no-repeat;
+}
+
+.auth-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(3px);
+}
+
+.quote-box {
+    position: relative;
+    z-index: 1;
+    max-width: 330px;
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.quote-mark {
+    font-size: 40px;
+    font-weight: 700;
+    color: #28d8ff;
+    line-height: 1;
+}
+
+.position-right {
+    margin-left: auto;
+    width: fit-content;
+}
+
+.quote-box strong {
+    display: block;
+    margin-top: 32px;
+    font-size: 13px;
+}
+
+.auth-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+}
+
+.brand {
+    position: absolute;
+    top: 48px;
+    left: 64px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1438db;
+    font-weight: 800;
+    font-size: 18px;
+}
+
+.brand-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #1438db;
+    color: #ffffff;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 380px;
+}
+
+@media (max-width: 900px) {
+    .auth-page {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-visual {
+        display: none;
+    }
+
+    .auth-content {
+        min-height: 100vh;
+        padding: 32px 24px;
+    }
+
+    .brand {
+        left: 24px;
+        top: 24px;
+    }
+}
+
