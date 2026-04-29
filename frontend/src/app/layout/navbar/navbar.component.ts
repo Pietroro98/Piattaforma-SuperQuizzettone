@@ -1,11 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { LayoutService } from '../layout.service';
-import { NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { RouterLink } from "@angular/router";
+import { AuthService } from '../../core/service/auth.service';
+import { Observable } from 'rxjs';
+import { User } from '../../core/models/user.model';
 
 @Component({
   selector: 'app-navbar',
-  imports: [NgIf, RouterLink],
+  imports: [NgIf, RouterLink, AsyncPipe],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   providers: []
@@ -14,13 +17,13 @@ export class NavbarComponent {
 
   @Input() isOpen = false;
   @Output() toggle = new EventEmitter<void>();
+  user$: Observable<Omit<User, 'password'> | null>;
 
-
-
-  constructor(private readonly layoutSvc: LayoutService) {
-    layoutSvc.collapsed$.subscribe(next => {
+  constructor(private readonly layoutSvc: LayoutService, private authService: AuthService) {
+    this.layoutSvc.collapsed$.subscribe(next => {
       this.isOpen = next;
     })
+    this.user$ = this.authService.currentUser$;
   }
 
   getInitials(firstName?: string, lastName?: string): string {
@@ -37,10 +40,10 @@ export class NavbarComponent {
   }
 
   logout() {
-    //da implementare
+    this.authService.logout();
   }
 
   toggleSidenav() {
-    this.toggle.emit(); // 🔥 fondamentale
+    this.toggle.emit();
   }
 }

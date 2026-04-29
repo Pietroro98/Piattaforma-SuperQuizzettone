@@ -18,6 +18,7 @@ export interface RegisterPayload {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+
   private readonly http = inject(HttpClient);
   private readonly storage = inject(StorageService);
   baseUrl: string = 'http://192.168.5.73:8080/api';
@@ -83,4 +84,11 @@ export class AuthService {
   username(): string | null {
     return this.storage.get<string>('username');
   }
+
+  getCurrentUserNameAndLastName(): Observable<string[] | null> {
+    return this.currentUser$.pipe(
+      map(user => user ? [user.name, user.surname] : null)
+    )
+  }
+
 }

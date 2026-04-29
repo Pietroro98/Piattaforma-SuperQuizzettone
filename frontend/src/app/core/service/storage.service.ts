@@ -1,3 +1,4 @@
+import { Token } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
@@ -15,4 +16,5 @@ export class StorageService {
   remove(key: string): void {
     localStorage.removeItem(key);
   }
+
 }

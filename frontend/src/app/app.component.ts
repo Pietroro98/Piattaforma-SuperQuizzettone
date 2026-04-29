@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NavbarComponent } from "../layout/navbar/navbar.component";
-import { SidenavComponent } from '../layout/sidenav/sidenav.component';
+import { NavbarComponent } from "./layout/navbar/navbar.component";
+import { SidenavComponent } from './layout/sidenav/sidenav.component';
 
 @Component({
   selector: 'app-root',
@@ -10,12 +10,8 @@ import { SidenavComponent } from '../layout/sidenav/sidenav.component';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'superquizzettone';
-  //   isOpen = false;
 
-  // toggleSidenav() {
-  //   this.isOpen = !this.isOpen;
-  // }
+  title = 'superquizzettone';
 
   isOpen = false;
 
