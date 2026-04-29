@@ -1,5 +1,5 @@
 package com.superquizzettone.service.ruolo;
-import com.superquizzettone.model.Ruolo;
+import com.superquizzettone.model.Role;
 import com.superquizzettone.repository.ruolo.RuoloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,28 +9,28 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class RuoloServiceImpl implements RuoloService {
+public class RoleServiceImpl implements RoleService {
 
     @Autowired
     private RuoloRepository ruoloRepository;
 
-    public List<Ruolo> listAll() {
-        return (List<Ruolo>) ruoloRepository.findAll();
+    public List<Role> listAll() {
+        return (List<Role>) ruoloRepository.findAll();
     }
 
-    public Ruolo caricaSingoloElemento(Long id) {
+    public Role caricaSingoloElemento(Long id) {
         return ruoloRepository.findById(id).orElse(null);
     }
 
     @Override
     @Transactional
-    public void aggiorna(Ruolo ruoloInstance) {
-        ruoloRepository.save(ruoloInstance);
+    public void aggiorna(Role roleInstance) {
+        ruoloRepository.save(roleInstance);
     }
 
     @Transactional
-    public void inserisciNuovo(Ruolo ruoloInstance) {
-        ruoloRepository.save(ruoloInstance);
+    public void inserisciNuovo(Role roleInstance) {
+        ruoloRepository.save(roleInstance);
     }
 
     @Transactional
@@ -38,7 +38,7 @@ public class RuoloServiceImpl implements RuoloService {
        ruoloRepository.deleteById(idToRemove);
     }
 
-    public Ruolo cercaPerDescrizioneECodice(String descrizione, String codice) {
-        return ruoloRepository.findByDescrizioneAndCodice(descrizione, codice);
+    public Role cercaPerDescrizioneECodice(String descrizione, String codice) {
+        return ruoloRepository.findByDescriptionAndCode(descrizione, codice);
     }
 }

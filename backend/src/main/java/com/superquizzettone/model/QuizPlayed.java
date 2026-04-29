@@ -20,8 +20,8 @@ public class QuizPlayed {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "utente_id", nullable = false)
-    private Utente utente;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "quiz_id", nullable = false)

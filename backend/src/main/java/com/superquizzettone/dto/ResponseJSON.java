@@ -1,17 +1,22 @@
 package com.superquizzettone.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ResponseJSON<T> {
 
     private Integer status;
-    private String messaggio;
+    private String message;
     private T data;
 
     public ResponseJSON() {
     }
 
-    public ResponseJSON(Integer status, String messaggio, T data) {
+    public ResponseJSON(Integer status, String message, T data) {
         this.status = status;
-        this.messaggio = messaggio;
+        this.message = message;
         this.data = data;
     }
 
@@ -29,29 +34,5 @@ public class ResponseJSON<T> {
 
     public static <T> ResponseJSON<T> error(int status, String messaggio, T data) {
         return new ResponseJSON<>(status, messaggio, data);
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public String getMessaggio() {
-        return messaggio;
-    }
-
-    public void setMessaggio(String messaggio) {
-        this.messaggio = messaggio;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
     }
 }
