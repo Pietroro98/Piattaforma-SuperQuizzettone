@@ -58,6 +58,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<QuizPlayed> attempts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "createdBy")
+    private List<Quiz> myQuiz = new ArrayList<>();
 
     public User(String username, String password) {
         this.username = username;
