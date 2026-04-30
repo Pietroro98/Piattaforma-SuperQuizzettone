@@ -36,6 +36,10 @@ public class Question {
     @Column(name = "tag")
     private String tag;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private QuestionStatus status;
+
     @Column(name = "motivation_rejection")
     private String motivationRejection;
 }
