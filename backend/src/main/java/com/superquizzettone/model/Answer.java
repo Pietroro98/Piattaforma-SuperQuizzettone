@@ -19,7 +19,7 @@ public class Answer {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "correct", nullable = false)
+    @Column(name = "correct")
     private boolean isCorrect;
 
     @ManyToOne

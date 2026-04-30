@@ -2,6 +2,7 @@ package com.superquizzettone.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.superquizzettone.model.Answer;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,8 @@ import lombok.Setter;
 public class AnswerDTO {
 
     private Long id;
+
+    @NotBlank(message = "description non può essere nullo o vuoto")
     private String description;
     private boolean correct;
 

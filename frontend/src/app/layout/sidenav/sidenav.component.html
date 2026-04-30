@@ -1,0 +1,7 @@
+<div class="sidenav" [class.open]="isOpen">
+  <a href="#">Home</a>
+  <a href="#">About</a>
+  <a href="#">Contatti</a>
+</div>
+
+<div class="overlay" *ngIf="isOpen" (click)="onClose()"></div>
