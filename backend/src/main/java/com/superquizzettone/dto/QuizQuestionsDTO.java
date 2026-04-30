@@ -49,10 +49,4 @@ public class QuizQuestionsDTO {
         );
         return result;
     }
-
-    public Quiz buildModelFromDTO(){
-
-    }
-
-
 }

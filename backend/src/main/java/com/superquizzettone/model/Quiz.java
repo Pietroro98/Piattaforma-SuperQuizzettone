@@ -1,11 +1,9 @@
 package com.superquizzettone.model;
-
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,6 +49,10 @@ public class Quiz {
 
     @OneToMany(mappedBy = "quiz")
     private List<QuizPlayed> attempts = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "created_by_id")
+    private User createdBy;
 
     public String getQuizTime() {
         if (quizTime == null) {
