@@ -2,6 +2,7 @@ package com.superquizzettone.web.api;
 import com.superquizzettone.dto.AdministratorUserUpdateDTO;
 import com.superquizzettone.dto.ResponseJSON;
 import com.superquizzettone.dto.UserDTO;
+import com.superquizzettone.dto.UserUpdateDTO;
 import com.superquizzettone.model.User;
 import com.superquizzettone.service.utente.UserService;
 import com.superquizzettone.web.api.exception.IdNotNullForInsertException;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/administrator/user")
+@RequestMapping("/api/admin")
 public class AdministratorUserController {
 
    private final UserService userService;
@@ -22,8 +23,8 @@ public class AdministratorUserController {
         this.userService = userService;
     }
 
-    @GetMapping
-    public ResponseEntity<ResponseJSON<List<UserDTO>>> findAll() {
+    @GetMapping("/list-users")
+    public ResponseEntity<ResponseJSON<List<UserDTO>>> usersList() {
         List<UserDTO> responseData =  userService.listAllUtenti()
                 .stream()
                 .map(UserDTO::buildUtenteDTOFromModel)
@@ -46,8 +47,8 @@ public class AdministratorUserController {
         );
     }
 
-    @PostMapping
-    public ResponseEntity<ResponseJSON<UserDTO>> create(@RequestBody @Valid UserDTO utenteInput) {
+    @PostMapping("/create")
+    public ResponseEntity<ResponseJSON<UserDTO>> createUser(@RequestBody @Valid UserDTO utenteInput) {
         if (utenteInput.getId() != null) {
             throw new IdNotNullForInsertException("Non è ammesso fornire un id per la creazione");
         }
@@ -59,8 +60,8 @@ public class AdministratorUserController {
                 .body(ResponseJSON.success(201, "Utente creato con successo.", responseData));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseJSON<UserDTO>> update(@PathVariable Long id, @RequestBody @Valid AdministratorUserUpdateDTO utenteInput) {
+    @PutMapping("/modify/{id}")
+    public ResponseEntity<ResponseJSON<UserDTO>> modifyUser(@PathVariable Long id, @RequestBody @Valid AdministratorUserUpdateDTO utenteInput) {
         User utenteEsistente = userService.caricaSingoloUtente(id);
         if (utenteEsistente == null) {
             return ResponseEntity.notFound().build();
@@ -73,7 +74,7 @@ public class AdministratorUserController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/deleteUser/{id}")
     public ResponseEntity<ResponseJSON<UserDTO>> disabilita(@PathVariable Long id) {
         User utenteEsistente = userService.caricaSingoloUtente(id);
         if (utenteEsistente == null) {
@@ -84,4 +85,6 @@ public class AdministratorUserController {
                 ResponseJSON.success(200, "Utente disabilitato con successo.", null)
         );
     }
+
+
 }
