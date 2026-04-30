@@ -1,1 +1,20 @@
-/* You can add global styles to this file, and also import other style files */
+.shadow {
+    box-shadow: #6d6d6d 4px 4px 20px, #6d6d6d -4px -4px 20px;
+}
+
+.clickable{
+    cursor: pointer;
+    color: white;
+}
+
+.primary-button {
+    border: none;
+    margin: 0.25rem 0;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: ivory;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+body{
+    margin:0;
+}
