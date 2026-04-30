@@ -3,6 +3,7 @@ package com.superquizzettone.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.superquizzettone.model.Category;
 import com.superquizzettone.model.Question;
+import com.superquizzettone.model.QuestionStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -35,6 +36,7 @@ public class QuestionDTO {
     private Category category;
     private String tag;
     private String motivationRejection;
+    private QuestionStatus status;
 
 
     public static QuestionDTO buildQuestionDTOFromModel(Question questionModel){
@@ -57,6 +59,28 @@ public class QuestionDTO {
             result.setAnswers(Collections.emptyList());
         }
 
+        return result;
+    }
+
+    public Question buildQuestionModel( boolean includeAnswers){
+        Question result = new Question();
+        result.setId(id);
+        result.setTag(tag);
+        result.setCategory(category);
+        result.setMotivationRejection(motivationRejection);
+        result.setStatus(status);
+
+        if (includeAnswers && this.answers != null){
+
+            result.setAnswers
+                    (this.answers
+                            .stream()
+                            .map(answerDTO -> answerDTO.buildAnswerModelFromDTO(result))
+                            .collect(Collectors.toList()));
+        }
+        else {
+            result.setAnswers(Collections.emptyList());
+        }
         return result;
     }
 

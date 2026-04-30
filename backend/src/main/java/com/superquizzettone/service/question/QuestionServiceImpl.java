@@ -4,7 +4,13 @@ import ch.qos.logback.core.util.StringUtil;
 import com.superquizzettone.dto.QuestionDTO;
 import com.superquizzettone.model.Category;
 import com.superquizzettone.model.Question;
+import com.superquizzettone.model.QuestionStatus;
+import com.superquizzettone.model.User;
 import com.superquizzettone.repository.question.QuestionRepository;
+import com.superquizzettone.security.SecurityUtils;
+import com.superquizzettone.web.api.exception.BadRequestException;
+import com.superquizzettone.web.api.exception.ForbiddenException;
+import com.superquizzettone.web.api.exception.NotAllowedException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -26,6 +32,9 @@ public class QuestionServiceImpl implements QuestionService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private SecurityUtils securityUtils;
+
     public List<Question> listAll(){
         return questionRepository.findAll();
     }
@@ -35,13 +44,35 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Transactional
-    public void update(Question question) {
-        questionRepository.save(question);
+    public void update(QuestionDTO question) {
+
+
+        Question model = question.buildQuestionModel(true);
+        questionRepository.save(model);
     }
 
     @Transactional
-    public void insertNew(Question question){
-        questionRepository.save(question);
+    public void insertNew(QuestionDTO question){
+
+        if (SecurityUtils.isPlayer() || SecurityUtils.isReviewer() || SecurityUtils.isAdministrator()){
+            throw new ForbiddenException("Non puoi inserire una domanda, non sei un writer");
+        }
+
+        if (question == null){
+            throw new NotAllowedException("La question inserita risulta nulla, riprova scemo");
+        }
+
+        if (question.getDescription() == null || question.getCategory() == null || question.getTag() == null || question.getAnswers() == null){
+            throw new BadRequestException("La question ha dei campi mancanti, ricontrolla broski");
+        }
+
+        if (question.getAnswers().size() < 2 || question.getAnswers().size() > 10){
+            throw new BadRequestException("Numero di risposte violato");
+        }
+
+        question.setStatus(QuestionStatus.IN_REVIEW);
+        Question model = question.buildQuestionModel(true);
+        questionRepository.save(model);
     }
 
     @Transactional
@@ -57,7 +88,7 @@ public class QuestionServiceImpl implements QuestionService {
         return questionRepository.findByTag(tag);
     }
 
-    public List<QuestionDTO> findByExample(Question example){
+    public List<Question> findByExample(QuestionDTO example){
 
         Map<String, Object> parameterMap= new HashMap<>();
         List<String> whereClauses = new ArrayList<>();
@@ -90,6 +121,10 @@ public class QuestionServiceImpl implements QuestionService {
             }
         }
 
+        if (example.getStatus() != null ){
+            whereClauses.add(" q.status like :status");
+            parameterMap.put("status",  example.getStatus());
+        }
 
         queryBuilder.append(!whereClauses.isEmpty() ? " and " : "");
         queryBuilder.append(org.apache.commons.lang3.StringUtils.join(whereClauses, " and "));
@@ -100,9 +135,6 @@ public class QuestionServiceImpl implements QuestionService {
             typedQuery.setParameter(key, parameterMap.get(key));
         }
 
-        return typedQuery.getResultList()
-                .stream()
-                .map(QuestionDTO::buildQuestionDTOFromModel)
-                .collect(Collectors.toList());
+        return typedQuery.getResultList();
     }
 }

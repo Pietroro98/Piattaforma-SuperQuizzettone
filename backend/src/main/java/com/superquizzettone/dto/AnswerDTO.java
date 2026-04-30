@@ -2,6 +2,7 @@ package com.superquizzettone.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.superquizzettone.model.Answer;
+import com.superquizzettone.model.Question;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,5 +26,15 @@ public class AnswerDTO {
         dto.setDescription(answer.getDescription());
         dto.setCorrect(answer.isCorrect());
         return dto;
+    }
+
+
+    public Answer buildAnswerModelFromDTO(Question question) {
+        Answer answer = new Answer();
+        answer.setId(this.id);
+        answer.setDescription(this.description);
+        answer.setCorrect(this.isCorrect());
+        answer.setQuestion(question);
+        return answer;
     }
 }

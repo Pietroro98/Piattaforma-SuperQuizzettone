@@ -10,11 +10,11 @@ public interface QuestionService {
 
     List<Question> listAll();
     Question getSingleElement(Long id);
-    void update(Question question);
-    void insertNew(Question question);
+    void update(QuestionDTO question);
+    void insertNew(QuestionDTO question);
     void remove(Long id);
 
     List<Question> findByCategory(Category category);
     List<Question> findByTag(String tag);
-    List<QuestionDTO> findByExample(Question example);
+    List<Question> findByExample(QuestionDTO example);
 }
