@@ -1,13 +1,8 @@
 package com.superquizzettone.model;
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
-
-import java.lang.management.MonitorInfo;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +30,10 @@ public class Question {
 
     @Column(name = "tag")
     private String tag;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private QuestionStatus status;
 
     @Column(name = "motivation_rejection")
     private String motivationRejection;

@@ -52,8 +52,14 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
+    /* Questo campo si riferisce alla tabella di join tra
+    Quiz e User passando per la tabella di mezzo QuizPlayed
+     */
     @OneToMany(mappedBy = "user")
     private List<QuizPlayed> attempts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "createdBy")
+    private List<Quiz> myQuiz = new ArrayList<>();
 
     public User(String username, String password) {
         this.username = username;
