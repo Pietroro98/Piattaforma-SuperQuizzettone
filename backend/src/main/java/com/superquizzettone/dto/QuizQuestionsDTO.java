@@ -50,9 +50,21 @@ public class QuizQuestionsDTO {
         return result;
     }
 
-    public Quiz buildModelFromDTO(){
-
+    /*
+    public static Quiz buildModelFromDTO(QuizQuestionsDTO dto){
+        Quiz result = new Quiz();
+        result.setDescription(dto.getDescription());
+        result.setName(dto.getName());
+        result.setQuizTime(dto.getQuizTime());
+        result.setTotalPoints(dto.getTotalPoints());
+        result.setQuestions(
+                dto.getQuestions()
+                        .stream()
+                        .map(Question::)
+        );
+        return result;
     }
+     */
 
 
 }
