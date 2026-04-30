@@ -1,5 +1,6 @@
 package com.superquizzettone.service.question;
 
+import com.superquizzettone.dto.QuestionDTO;
 import com.superquizzettone.model.Category;
 import com.superquizzettone.model.Question;
 
@@ -15,4 +16,5 @@ public interface QuestionService {
 
     List<Question> findByCategory(Category category);
     List<Question> findByTag(String tag);
+    List<QuestionDTO> findByExample(Question example);
 }

@@ -10,4 +10,5 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findByCategory(Category category);
     List<Question> findByTag(String tag);
+    List<Question> findByExample(Question example);
 }
