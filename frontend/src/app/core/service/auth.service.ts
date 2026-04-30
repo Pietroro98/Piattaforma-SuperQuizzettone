@@ -18,6 +18,7 @@ export interface RegisterPayload {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+
   private readonly http = inject(HttpClient);
   private readonly storage = inject(StorageService);
   baseUrl: string = 'http://192.168.5.73:8080/api';
@@ -31,7 +32,8 @@ export class AuthService {
   login(payload: LoginPayload): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/auth/login`, payload).pipe(
       tap(response => {
-        console.log(response),
+        console.log(response)
+        console.log(response.data)
           this.storage.set('token', response.data.token),
           this.storage.set('username', response.data.username),
           //this.storage.set('roles', response.data.roles),
@@ -83,4 +85,9 @@ export class AuthService {
   username(): string | null {
     return this.storage.get<string>('username');
   }
+
+  getCurrentUserNameAndLastName() {
+    return this.http.get<AuthResponse>(`${this.baseUrl}/utente/userInfo`);
+  }
+
 }

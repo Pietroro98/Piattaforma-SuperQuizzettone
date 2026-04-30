@@ -1,1 +1,13 @@
-<router-outlet></router-outlet>
+<app-sidenav
+  [isOpen]="isOpen"
+  (close)="closeSidenav()">
+</app-sidenav>
+
+<app-navbar
+  [isOpen]="isOpen"
+  (toggle)="toggleSidenav()">
+</app-navbar>
+
+<div class="container mt-3">
+  <router-outlet></router-outlet>
+</div>
