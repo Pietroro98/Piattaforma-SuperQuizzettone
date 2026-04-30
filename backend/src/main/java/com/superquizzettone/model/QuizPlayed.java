@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -34,5 +35,5 @@ public class QuizPlayed {
     private LocalDateTime completionDate;
 
     @Column(name = "time_spent")
-    private LocalTime timeSpent;
+    private Duration timeSpent;
 }
