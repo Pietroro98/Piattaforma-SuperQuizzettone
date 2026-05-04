@@ -75,7 +75,7 @@ public class QuestionDTO {
             result.setAnswers
                     (this.answers
                             .stream()
-                            .map(answerDTO -> answerDTO.buildAnswerModelFromDTO(result))
+                            .map(answerDTO -> answerDTO.buildAnswerModelFromDTO(answerDTO))
                             .collect(Collectors.toList()));
         }
         else {
