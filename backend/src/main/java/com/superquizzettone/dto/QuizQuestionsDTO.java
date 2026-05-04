@@ -59,6 +59,13 @@ public class QuizQuestionsDTO {
         result.setQuizTime(dto.getQuizTime());
         result.setTotalPoints(dto.getTotalPoints());
         result.setQuestions(dto.getQuestions().stream()
-                .map(QuestionDTO::buildmo));
+                .map(questionDTO -> {
+                    Question question = questionDTO.buildQuestionModel(true);
+                    return question;
+                })
+                .toList());
+        return result;
     }
+
+
 }

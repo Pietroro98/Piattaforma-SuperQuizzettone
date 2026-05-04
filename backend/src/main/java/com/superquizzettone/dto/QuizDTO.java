@@ -10,6 +10,8 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
@@ -28,9 +30,9 @@ public class QuizDTO {
     @NotBlank(message = "Il tempo del quiz non può essere nullo")
     private String quizTime;
 
+    private Set<CategoryDTO> categorys;
+
     private Double totalPoints;
-
-
 
     private int questions;
 
@@ -42,6 +44,9 @@ public class QuizDTO {
         result.setDescription(model.getDescription());
         result.setName(model.getName());
         result.setQuizTime(model.getQuizTime());
+        result.setCategorys(model.getCategories().stream()
+                .map(CategoryDTO::buildDTOFromModel)
+                .collect(Collectors.toSet()));
         result.setTotalPoints(model.getTotalPoints());
         if(model.getQuestions() != null){
             model.getQuestions()
@@ -61,6 +66,9 @@ public class QuizDTO {
         result.setName(dto.getName());
         result.setQuizTime(dto.getQuizTime());
         result.setTotalPoints(dto.getTotalPoints());
+        result.setCategories(dto.getCategorys().stream()
+                .map(CategoryDTO::buildModelFromDTO)
+                .collect(Collectors.toSet()));
         return result;
     }
 
