@@ -48,7 +48,7 @@ SecurityConfig {
              .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
                 .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/check-username").permitAll()
                 .requestMatchers("/api/utente/userInfo", "/api/utente/changePassword").authenticated()
-                .requestMatchers("/api/reviewer/**").hasRole("REVIEWER")
+                .requestMatchers("/api/reviewer/**").hasAnyRole("REVIEWER", "ADMINISTRATOR")
                 .requestMatchers("/api/admin/**").hasRole("ADMINISTRATOR")
                 .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
