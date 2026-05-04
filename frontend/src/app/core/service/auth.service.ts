@@ -21,7 +21,7 @@ export class AuthService {
 
   private readonly http = inject(HttpClient);
   private readonly storage = inject(StorageService);
-  baseUrl: string = 'http://192.168.5.73:8080/api';
+  baseUrl: string = 'http://192.168.5.73:8080/superQuizzettone/api';
 
   private readonly currentUserSubject = new BehaviorSubject<Omit<User, 'password'> | null>(
     this.storage.get<Omit<User, 'password'>>('auth_user')

@@ -1,5 +1,6 @@
 <div class="container py-4">
     <div class="card-custom mx-auto" style="max-width: 900px;" [formGroup]="form">
+            <h3>Inserisci una domanda:</h3>
 
         <!-- DOMANDA -->
         <label class="mb-2 text-muted small">DOMANDA</label>
@@ -12,17 +13,28 @@
         </div>
         }
 
+        <section class="d-flex justify-content-end">
+            <select class="form-select mb-3">
+                <option selected value="1">Singola</option>
+                <option value="2">Multipla</option>
+                <option value="3">Vero-Falso</option>
+            </select>
+        </section>
+
         <!-- RISPOSTE -->
         <div class="d-flex flex-column gap-2 mb-3" formArrayName="answers">
 
             @for (answer of answers.controls; track answer; let i = $index) {
-            <div [formGroupName]="i" class="answer-row" [class.correct]="answer.get('isCorrect')?.value">
+            <div [formGroupName]="i" class="answer-row" [class.correct]="answer.get('isCorrect')?.value"
+                [class.uncorrect]="!answer.get('isCorrect')?.value">
 
                 <strong>{{answer.value.label}}</strong>
 
                 <input class="input-custom flex-grow-1" formControlName="text" placeholder="Scrivi risposta..." />
 
+                @if (i > 3) {
                 <span class="text-danger pointer" (click)="removeAnswer(i)">✖</span>
+                }
 
                 <input type="radio" [checked]="answer.get('isCorrect')?.value" (change)="setCorrect(i)" />
 
@@ -32,19 +44,32 @@
         </div>
 
         <!-- ADD -->
-        <button class="add-answer mb-4" (click)="addAnswer()">
+        <button class="border add-answer mb-5 d-block" (click)="addAnswer()">
             + Aggiungi risposta
         </button>
 
         <!-- CONFIG -->
+        <div class="btn-group mb-2" role="group">
+            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+            <label class="btn btn-outline-primary" for="btnradio1">Seleziona categoria</label>
+
+            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+            <label class="btn btn-outline-primary" for="btnradio2">Aggiungi categoria</label>
+
+        </div>
+
         <div class="row g-3 mb-4">
             <div class="col-md-6">
+                <label><strong>Categoria:</strong></label>
                 <input class="input-custom w-100" formControlName="category" placeholder="Categoria" />
             </div>
 
-            <div class="col-md-6">
-                <input class="input-custom w-100" formControlName="tags" placeholder="Tag (separati da virgola)" />
-            </div>
+        </div>
+
+
+        <div class="col-md-6 mb-4">
+            <label><strong>Tag:</strong></label>
+            <input class="input-custom w-100" formControlName="tags" placeholder="Tag" />
         </div>
 
         <!-- ACTIONS -->
@@ -55,7 +80,8 @@
             </button>
         </div>
 
-        <!-- LOGIC -->
+
+        <!-- PREVIEW        
         <div class="logic-box mt-4">
             <div class="fw-semibold mb-2">STATO LOGICO</div>
 
@@ -67,7 +93,7 @@
                 }
             </div>
             }
-        </div>
+        </div> -->
 
     </div>
 </div>
