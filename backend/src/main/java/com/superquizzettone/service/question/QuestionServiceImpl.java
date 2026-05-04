@@ -66,6 +66,10 @@ public class QuestionServiceImpl implements QuestionService {
             throw new BadRequestException("La question ha dei campi mancanti, ricontrolla broski");
         }
 
+        if (question.getType() == null) {
+            throw new BadRequestException("Il type della question non puo essere nullo");
+        }
+
         if (question.getAnswers().size() < 2 || question.getAnswers().size() > 10){
             throw new BadRequestException("Numero di risposte violato");
         }
@@ -124,6 +128,11 @@ public class QuestionServiceImpl implements QuestionService {
         if (example.getStatus() != null ){
             whereClauses.add(" q.status like :status");
             parameterMap.put("status",  example.getStatus());
+        }
+
+        if (example.getType() != null) {
+            whereClauses.add(" q.type = :type ");
+            parameterMap.put("type", example.getType());
         }
 
         queryBuilder.append(!whereClauses.isEmpty() ? " and " : "");
