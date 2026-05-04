@@ -29,4 +29,8 @@ public class RoleDTO {
     public static List<RoleDTO> createRuoloDTOListFromModelList(List<Role> modelList) {
         return modelList.stream().map(RoleDTO::buildRuoloDTOFromModel).toList();
     }
+
+    public static Role createModelFromDTO(RoleDTO dto){
+        return new Role(dto.getId(), dto.getDescription(), dto.getCode());
+    }
 }

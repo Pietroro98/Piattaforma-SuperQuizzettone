@@ -1,8 +1,6 @@
 package com.superquizzettone.web.api;
-import com.superquizzettone.dto.AdministratorUserUpdateDTO;
-import com.superquizzettone.dto.ResponseJSON;
-import com.superquizzettone.dto.UserDTO;
-import com.superquizzettone.dto.UserUpdateDTO;
+
+import com.superquizzettone.dto.*;
 import com.superquizzettone.model.User;
 import com.superquizzettone.service.utente.UserService;
 import com.superquizzettone.web.api.exception.IdNotNullForInsertException;
@@ -17,7 +15,7 @@ import java.util.List;
 @RequestMapping("/api/admin")
 public class AdministratorUserController {
 
-   private final UserService userService;
+    private final UserService userService;
 
     public AdministratorUserController(UserService userService) {
         this.userService = userService;
@@ -25,7 +23,7 @@ public class AdministratorUserController {
 
     @GetMapping("/list-users")
     public ResponseEntity<ResponseJSON<List<UserDTO>>> usersList() {
-        List<UserDTO> responseData =  userService.listAllUtenti()
+        List<UserDTO> responseData = userService.listAllUtenti()
                 .stream()
                 .map(UserDTO::buildUtenteDTOFromModel)
                 .toList();
@@ -78,7 +76,8 @@ public class AdministratorUserController {
     public ResponseEntity<ResponseJSON<UserDTO>> disabilita(@PathVariable Long id) {
         User utenteEsistente = userService.caricaSingoloUtente(id);
         if (utenteEsistente == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).
+                    body(ResponseJSON.error(404, "L'utente con id: "+ id + " non esiste"));
         }
         userService.disabilita(id);
         return ResponseEntity.ok(
@@ -86,5 +85,37 @@ public class AdministratorUserController {
         );
     }
 
+    @PatchMapping("/assign-role/{id}")
+    public ResponseEntity<ResponseJSON<UserUpdateDTO>> assignRole(@PathVariable Long id, RoleDTO roleDTO) {
+        User utenteEsistente = userService.caricaSingoloUtente(id);
+        if (utenteEsistente == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ResponseJSON.error(404, "L'utente con id: "+ id + " non esiste"));
+        }
+
+        userService.assegnaRuolo(utenteEsistente, id, RoleDTO.createModelFromDTO(roleDTO));
+        UserUpdateDTO responseData = UserUpdateDTO.buildDTOFromModel(utenteEsistente);
+        return ResponseEntity.ok(
+                ResponseJSON.success(200,
+                        "Ruolo dell'utente: " + responseData.getName() + " " +
+                                responseData.getSurname() + "aggiornato con successo",
+                        responseData
+                )
+        );
+    }
+    /*
+    @PatchMapping("/revoke-role/{id}")
+    public ResponseEntity<ResponseJSON<UserUpdateDTO>> revokeRole(@PathVariable Long id, RoleDTO roleDTO){
+
+    }
+
+     */
+/*
+
+    revokeRole(Body Role)
+    endpoint: PATCH ../admin/revoke-role/{id}
+    disableUser(id Long):
+    endpoint: PUT/(PATCH) ../admin/disable/{id}
+*/
 
 }

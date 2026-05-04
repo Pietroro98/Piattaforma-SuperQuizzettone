@@ -154,6 +154,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User assegnaRuolo(User user, Long id, Role role) {
+        if(user == null){
+            throw new NotFoundException("Utente cercato inesistente");
+        }
+        if (user.getRoles().contains(role)){
+            throw new BadRequestException("L'utente possiede già il ruolo scelto");
+        }
+        user.getRoles().add(role);
+        return user;
+    }
+
+    @Override
     @Transactional
     public User inserisciNuovo(User entity)
     {
