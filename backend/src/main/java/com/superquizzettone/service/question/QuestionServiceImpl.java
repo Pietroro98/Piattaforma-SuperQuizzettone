@@ -9,6 +9,7 @@ import com.superquizzettone.model.QuestionStatus;
 import com.superquizzettone.model.User;
 import com.superquizzettone.repository.question.QuestionRepository;
 import com.superquizzettone.security.SecurityUtils;
+import com.superquizzettone.service.utente.UserService;
 import com.superquizzettone.web.api.exception.BadRequestException;
 import com.superquizzettone.web.api.exception.ForbiddenException;
 import com.superquizzettone.web.api.exception.NotAllowedException;
@@ -37,6 +38,9 @@ public class QuestionServiceImpl implements QuestionService {
     @Autowired
     private SecurityUtils securityUtils;
 
+    @Autowired
+    private UserService userService;
+
     public List<Question> listAll(){
         return questionRepository.findAll();
     }
@@ -46,7 +50,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Transactional
-    public void update(QuestionDTO question) {
+    public Question update(QuestionDTO question) {
 
         if (SecurityUtils.isPlayer() || SecurityUtils.isReviewer() || SecurityUtils.isAdministrator() ){
             throw new ForbiddenException("Non puoi modificare una domanda, non sei un writer");
@@ -61,11 +65,11 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         Question model = question.buildQuestionModel(true);
-        questionRepository.save(model);
+        return questionRepository.save(model);
     }
 
     @Transactional
-    public void insertNew(QuestionDTO question){
+    public Question insertNew(QuestionDTO question){
 
         if (SecurityUtils.isPlayer() || SecurityUtils.isReviewer() || SecurityUtils.isAdministrator()){
             throw new ForbiddenException("Non puoi inserire una domanda, non sei un writer");
@@ -73,10 +77,6 @@ public class QuestionServiceImpl implements QuestionService {
 
         if (question == null){
             throw new NotAllowedException("La question inserita risulta nulla, riprova scemo");
-        }
-
-        if (question.getDescription() == null || question.getCategory() == null || question.getTag() == null || question.getAnswers() == null){
-            throw new BadRequestException("La question ha dei campi mancanti, ricontrolla broski");
         }
 
         if (question.getType() == null) {
@@ -89,7 +89,7 @@ public class QuestionServiceImpl implements QuestionService {
 
         question.setStatus(QuestionStatus.IN_REVIEW);
         Question model = question.buildQuestionModel(true);
-        questionRepository.save(model);
+        return questionRepository.save(model);
     }
 
     @Transactional
@@ -103,20 +103,10 @@ public class QuestionServiceImpl implements QuestionService {
         questionRepository.deleteById(id);
     }
 
-    public List<Question> findByCategory(Category category){
-
-        if (category == null){
-            throw new BadRequestException("La category risulta nulla");
-        }
-        return questionRepository.findByCategory(category);
-    }
-
-    public List<Question> findByTag(String tag){
-
-        if (tag == null){
-            throw new BadRequestException("Il tag della domanda risulta nullo");
-        }
-        return questionRepository.findByTag(tag);
+    @Override
+    public List<Question> getMyQuestions() {
+        Long idUser = SecurityUtils.getUserId();
+        return questionRepository.findByCreatedById(idUser);
     }
 
     public List<Question> findByExample(QuestionDTO example){
