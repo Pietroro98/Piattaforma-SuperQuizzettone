@@ -2,6 +2,7 @@ package com.superquizzettone.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.superquizzettone.model.*;
+import com.superquizzettone.security.SecurityUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -38,9 +39,13 @@ public class QuestionDTO {
     private CategoryDTO category;
     private String tag;
     private String motivationRejection;
+
+    @NotNull(message = "Lo stato non può essere nullo")
     private QuestionStatus status;
+
+    @NotNull(message = "Il tipo non può essere nullo")
     private QuestionType type;
-    private User createdBy;
+
     private User reviewedBy;
     private LocalDateTime approvalDate;
 
@@ -55,7 +60,6 @@ public class QuestionDTO {
         result.setMotivationRejection(questionModel.getMotivationRejection());
         result.setStatus(questionModel.getStatus());
         result.setType(questionModel.getType());
-        result.setCreatedBy(questionModel.getCreatedBy());
         result.setReviewedBy(questionModel.getReviewedBy());
         result.setApprovalDate(questionModel.getApprovalDate());
 
@@ -82,7 +86,6 @@ public class QuestionDTO {
         result.setMotivationRejection(motivationRejection);
         result.setStatus(status);
         result.setType(type);
-        result.setCreatedBy(createdBy);
         result.setReviewedBy(reviewedBy);
         result.setApprovalDate(approvalDate);
 
