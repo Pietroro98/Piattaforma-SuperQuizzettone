@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../core/service/auth.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-homepage',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './homepage.component.html',
   styleUrl: './homepage.component.scss'
 })

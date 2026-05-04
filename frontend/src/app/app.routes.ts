@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './authentication/login/login.component';
-import { AuthComponent } from './authentication/auth/auth.component';
-import { RegisterComponent } from './authentication/register/register.component';
 import { HomepageComponent } from './features/homepage/homepage.component';
+import { QuestionCreatorComponent } from './features/question-creator/question-creator.component';
+import { AuthComponent } from './features/authentication/auth/auth.component';
+import { LoginComponent } from './features/authentication/login/login.component';
+import { RegisterComponent } from './features/authentication/register/register.component';
 
 export const routes: Routes = [
   {
@@ -22,6 +23,10 @@ export const routes: Routes = [
       { path: 'register', component: RegisterComponent },
       { path: '', redirectTo: 'login', pathMatch: 'full' }
     ]
+  },
+  {
+    path: 'question-list',
+    component: QuestionCreatorComponent,
   },
   {
     path: '**',
