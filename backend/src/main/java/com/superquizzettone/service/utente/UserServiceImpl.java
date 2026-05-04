@@ -227,7 +227,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("Utente autenticato non trovato."));
 
         user.setName(userUpdateDTO.getName());
-        user.setUsername(userUpdateDTO.getSurname());
+        user.setSurname(userUpdateDTO.getSurname());
 
         return userRepository.save(user);
     }

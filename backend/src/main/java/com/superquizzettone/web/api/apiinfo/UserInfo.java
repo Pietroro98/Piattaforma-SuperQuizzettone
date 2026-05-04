@@ -60,9 +60,9 @@ public class UserInfo {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<ResponseJSON<UserDTO>> updateMe(@RequestBody @Valid UserUpdateDTO body) {
+    public ResponseEntity<ResponseJSON<UserUpdateDTO>> updateMe(@RequestBody @Valid UserUpdateDTO body) {
         User userAggiornato = userService.aggiornaProfilo(body);
-        UserDTO responseData = UserDTO.buildUtenteDTOFromModel(userAggiornato);
+        UserUpdateDTO responseData = UserUpdateDTO.buildDTOFromModel(userAggiornato);
 
         return ResponseEntity.ok(
                 ResponseJSON.success(200, "Profilo aggiornato con successo.", responseData)
