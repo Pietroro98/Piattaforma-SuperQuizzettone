@@ -34,7 +34,7 @@ public class QuestionDTO {
     private List<AnswerDTO> answers;
 
     @NotNull(message = "category non può essere nullo")
-    private Category category;
+    private CategoryDTO category;
     private String tag;
     private String motivationRejection;
     private QuestionStatus status;
@@ -46,7 +46,7 @@ public class QuestionDTO {
         QuestionDTO result = new QuestionDTO();
         result.setId(questionModel.getId());
         result.setDescription(questionModel.getDescription());
-        result.setCategory(questionModel.getCategory());
+        result.setCategory(CategoryDTO.buildDTOFromModel(questionModel.getCategory()));
         result.setTag(questionModel.getTag());
         result.setMotivationRejection(questionModel.getMotivationRejection());
         result.setStatus(questionModel.getStatus());
@@ -71,7 +71,7 @@ public class QuestionDTO {
         result.setId(id);
         result.setTag(tag);
         result.setDescription(description);
-        result.setCategory(category);
+        result.setCategory(CategoryDTO.buildModelFromDTO(category));
         result.setMotivationRejection(motivationRejection);
         result.setStatus(status);
         result.setType(type);
