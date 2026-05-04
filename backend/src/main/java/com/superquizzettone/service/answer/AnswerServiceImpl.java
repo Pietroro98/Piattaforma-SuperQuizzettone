@@ -1,7 +1,9 @@
 package com.superquizzettone.service.answer;
 
+import com.superquizzettone.dto.AnswerDTO;
 import com.superquizzettone.model.Answer;
 import com.superquizzettone.repository.answer.AnswerRepository;
+import com.superquizzettone.web.api.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,17 +26,29 @@ public class AnswerServiceImpl implements AnswerService{
     }
 
     @Transactional
-    public void update(Answer answer){
-        answerRepository.save(answer);
+    public void update(AnswerDTO answer){
+
+        Answer result = answer.buildAnswerModelFromDTO(answer);
+        answerRepository.save(result);
     }
 
     @Transactional
-    public void insertNew(Answer answer){
-        answerRepository.save(answer);
+    public void insertNew(AnswerDTO answer){
+
+        if (answer == null){
+            throw new BadRequestException("Risposte inserite risultano nulle");
+        }
+
+        Answer result = answer.buildAnswerModelFromDTO(answer);
+        answerRepository.save(result);
     }
 
     @Transactional
     public void remove(Long id){
+
+        if (id == null){
+            throw new BadRequestException("l'id risulta nullo");
+        }
         answerRepository.deleteById(id);
     }
 }

@@ -35,6 +35,10 @@ public class Question {
     @Column(name = "status")
     private QuestionStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private QuestionType type;
+
     @Column(name = "motivation_rejection")
     private String motivationRejection;
 }
