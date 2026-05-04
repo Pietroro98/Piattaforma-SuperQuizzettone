@@ -1,5 +1,6 @@
 package com.superquizzettone.service.question;
 
+import com.superquizzettone.dto.MotivationDTO;
 import com.superquizzettone.dto.QuestionDTO;
 import com.superquizzettone.model.Category;
 import com.superquizzettone.model.Question;
@@ -17,4 +18,5 @@ public interface QuestionService {
     List<Question> findByCategory(Category category);
     List<Question> findByTag(String tag);
     List<Question> findByExample(QuestionDTO example);
+    public Question rejectQuestion(MotivationDTO motivationDTO);
 }

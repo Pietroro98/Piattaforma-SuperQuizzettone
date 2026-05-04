@@ -1,6 +1,7 @@
 package com.superquizzettone.service.question;
 
 import ch.qos.logback.core.util.StringUtil;
+import com.superquizzettone.dto.MotivationDTO;
 import com.superquizzettone.dto.QuestionDTO;
 import com.superquizzettone.model.Category;
 import com.superquizzettone.model.Question;
@@ -15,6 +16,7 @@ import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -174,5 +176,29 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         return typedQuery.getResultList();
+    }
+
+
+    public Question rejectQuestion(MotivationDTO motivationDTO){
+
+        Long idQuestion = motivationDTO.getQuestion_id();
+
+        if (motivationDTO.getQuestion_id() == null || questionRepository.findById(idQuestion) == null || motivationDTO == null){
+            throw new RuntimeException("LA question risulta null");
+        }
+
+        Question question = questionRepository.findById(idQuestion).orElse(null);
+
+        if (motivationDTO.getMotivationRejection() == null){
+            question.setStatus(QuestionStatus.REJECTED);
+        }
+
+        else {
+            question.setMotivationRejection(motivationDTO.getMotivationRejection());
+            question.setStatus(QuestionStatus.DRAFT);
+        }
+
+        return question;
+
     }
 }
