@@ -49,4 +49,23 @@ public class QuizQuestionsDTO {
         );
         return result;
     }
+
+    public static Quiz buildModelFromDTO(QuizQuestionsDTO dto){
+        Quiz result = new Quiz();
+
+        result.setId(dto.getId());
+        result.setDescription(dto.getDescription());
+        result.setName(dto.getName());
+        result.setQuizTime(dto.getQuizTime());
+        result.setTotalPoints(dto.getTotalPoints());
+        result.setQuestions(dto.getQuestions().stream()
+                .map(questionDTO -> {
+                    Question question = questionDTO.buildQuestionModel(true);
+                    return question;
+                })
+                .toList());
+        return result;
+    }
+
+
 }
