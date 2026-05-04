@@ -22,11 +22,10 @@ public class UtenteAuthRegisterDTO {
     @Size(min = 4, message = "Lo username deve avere almeno 4 caratteri")
     private String surname;
 
-    @NotBlank(message = "non può essere nullo, vuoto o contenere solo spazi")
-
+    @NotBlank(message = "Lo username non può essere nullo, vuoto o contenere solo spazi")
     private String username;
 
-    @NotBlank(message = "Il nome non può essere nullo, vuoto o contenere solo spazi")
+    @NotBlank(message = "La password non può essere nulla, vuota o contenere solo spazi")
     @Size(min = 6, max = 12, message = "La password deve avere tra 6 e 12 caratteri")
     @Pattern(
             regexp = "^(?=.*[A-Z])(?=.*[a-zA-Z0-9])(?=.*[!£&$?_-])[A-Za-z0-9!£&$?_-]{6,12}$",
