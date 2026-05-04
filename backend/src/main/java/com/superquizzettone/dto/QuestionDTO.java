@@ -47,6 +47,7 @@ public class QuestionDTO {
         result.setCategory(questionModel.getCategory());
         result.setTag(questionModel.getTag());
         result.setMotivationRejection(questionModel.getMotivationRejection());
+        result.setStatus(questionModel.getStatus());
 
         if (questionModel.getAnswers() != null) {
             result.setAnswers(
@@ -66,6 +67,7 @@ public class QuestionDTO {
         Question result = new Question();
         result.setId(id);
         result.setTag(tag);
+        result.setDescription(description);
         result.setCategory(category);
         result.setMotivationRejection(motivationRejection);
         result.setStatus(status);
