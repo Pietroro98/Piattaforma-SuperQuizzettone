@@ -3,7 +3,6 @@ package com.superquizzettone.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.superquizzettone.model.Question;
 import com.superquizzettone.model.Quiz;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,22 +30,28 @@ public class QuizDTO {
 
     private Double totalPoints;
 
-    private List<Long> questions = new ArrayList<>();
+
+
+    private int questions;
 
     public QuizDTO(){}
 
     public static QuizDTO buildDTOFromModel(Quiz model){
-        QuizDTO result = new QuizDTO(
-                model.getId(),
-                model.getDescription(),
-                model.getName(),
-                model.getQuizTime(),
-                model.getTotalPoints(),
-                model.getQuestions()
-                        .stream()
-                        .map(Question::getId)
-                        .toList()
-        );
+        QuizDTO result = new QuizDTO();
+        result.setId(model.getId());
+        result.setDescription(model.getDescription());
+        result.setName(model.getName());
+        result.setQuizTime(model.getQuizTime());
+        result.setTotalPoints(model.getTotalPoints());
+        if(model.getQuestions() != null){
+            model.getQuestions()
+                    .stream()
+                    .map(Question::getId)
+                    .toList()
+                    .size();
+        } else {
+            result.setQuestions(0);
+        }
         return result;
     }
 
@@ -59,6 +64,16 @@ public class QuizDTO {
         return result;
     }
 
+    public static List<QuizDTO> buildListDTOFromModel(List<Quiz> listModel) {
+        return listModel.stream()
+                .map(QuizDTO::buildDTOFromModel)
+                .toList();
+    }
 
+    public static List<Quiz> buildListModelFromDTO(List<QuizDTO> listDTO){
+        return listDTO.stream()
+                .map(QuizDTO::buildModelFromDTO)
+                .toList();
+    }
 
 }
