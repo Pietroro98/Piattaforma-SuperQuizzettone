@@ -19,6 +19,7 @@ public class AnswerDTO {
     @NotBlank(message = "description non può essere nullo o vuoto")
     private String description;
     private boolean correct;
+    private Question question;
 
     public static AnswerDTO buildAnswerDTOfromModel(Answer answer) {
         AnswerDTO dto = new AnswerDTO();
@@ -29,12 +30,12 @@ public class AnswerDTO {
     }
 
 
-    public Answer buildAnswerModelFromDTO(Question question) {
+    public Answer buildAnswerModelFromDTO(AnswerDTO answerDTO) {
         Answer answer = new Answer();
         answer.setId(this.id);
         answer.setDescription(this.description);
         answer.setCorrect(this.isCorrect());
-        answer.setQuestion(question);
+        answer.setQuestion(answerDTO.getQuestion());
         return answer;
     }
 }

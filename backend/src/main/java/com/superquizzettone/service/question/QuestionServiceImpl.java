@@ -46,6 +46,17 @@ public class QuestionServiceImpl implements QuestionService {
     @Transactional
     public void update(QuestionDTO question) {
 
+        if (SecurityUtils.isPlayer() || SecurityUtils.isReviewer() || SecurityUtils.isAdministrator() ){
+            throw new ForbiddenException("Non puoi modificare una domanda, non sei un writer");
+        }
+
+        if (question == null){
+            throw new BadRequestException("Le modifiche inserite sono nulle");
+        }
+
+        if (question.getAnswers().size() < 2 || question.getAnswers().size() > 10){
+            throw new BadRequestException("Numero di risposte violato");
+        }
 
         Question model = question.buildQuestionModel(true);
         questionRepository.save(model);
@@ -81,18 +92,36 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Transactional
     public void remove(Long id){
+
+        if(id == null){
+            throw new BadRequestException("l'id della domanda richiesta è null");
+        }
+
+
         questionRepository.deleteById(id);
     }
 
     public List<Question> findByCategory(Category category){
+
+        if (category == null){
+            throw new BadRequestException("La category risulta nulla");
+        }
         return questionRepository.findByCategory(category);
     }
 
     public List<Question> findByTag(String tag){
+
+        if (tag == null){
+            throw new BadRequestException("Il tag della domanda risulta nullo");
+        }
         return questionRepository.findByTag(tag);
     }
 
     public List<Question> findByExample(QuestionDTO example){
+
+        if (example == null){
+            throw new BadRequestException("Elemento di ricerca invalido (example nulla)");
+        }
 
         Map<String, Object> parameterMap= new HashMap<>();
         List<String> whereClauses = new ArrayList<>();
