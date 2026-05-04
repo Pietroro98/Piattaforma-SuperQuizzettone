@@ -30,6 +30,7 @@ public class AnswerServiceImpl implements AnswerService{
 
     @Transactional
     public void insertNew(Answer answer){
+
         answerRepository.save(answer);
     }
 
