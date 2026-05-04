@@ -44,7 +44,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Transactional
-    public void update(QuestionDTO question) {
+    public Question update(QuestionDTO question) {
 
         if (SecurityUtils.isPlayer() || SecurityUtils.isReviewer() || SecurityUtils.isAdministrator() ){
             throw new ForbiddenException("Non puoi modificare una domanda, non sei un writer");
@@ -59,11 +59,11 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         Question model = question.buildQuestionModel(true);
-        questionRepository.save(model);
+        return questionRepository.save(model);
     }
 
     @Transactional
-    public void insertNew(QuestionDTO question){
+    public Question insertNew(QuestionDTO question){
 
         if (SecurityUtils.isPlayer() || SecurityUtils.isReviewer() || SecurityUtils.isAdministrator()){
             throw new ForbiddenException("Non puoi inserire una domanda, non sei un writer");
@@ -71,10 +71,6 @@ public class QuestionServiceImpl implements QuestionService {
 
         if (question == null){
             throw new NotAllowedException("La question inserita risulta nulla, riprova scemo");
-        }
-
-        if (question.getDescription() == null || question.getCategory() == null || question.getTag() == null || question.getAnswers() == null){
-            throw new BadRequestException("La question ha dei campi mancanti, ricontrolla broski");
         }
 
         if (question.getType() == null) {
@@ -87,7 +83,7 @@ public class QuestionServiceImpl implements QuestionService {
 
         question.setStatus(QuestionStatus.IN_REVIEW);
         Question model = question.buildQuestionModel(true);
-        questionRepository.save(model);
+        return questionRepository.save(model);
     }
 
     @Transactional

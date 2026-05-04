@@ -72,8 +72,6 @@ public class WriterController {
         );
     }
 
-
-}
-
 // getMyQuestions(@Param idUsers):
 // endpoint: GET ../writer/get-my-questions
+}
