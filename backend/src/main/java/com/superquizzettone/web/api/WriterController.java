@@ -6,9 +6,12 @@ import com.superquizzettone.service.question.QuestionService;
 import com.superquizzettone.service.quiz.QuizService;
 import com.superquizzettone.web.api.exception.IdNotNullForInsertException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/writer")
@@ -72,6 +75,16 @@ public class WriterController {
         );
     }
 
-// getMyQuestions(@Param idUsers):
-// endpoint: GET ../writer/get-my-questions
+    @GetMapping("/get-my-questions")
+    public ResponseEntity<ResponseJSON<List<QuestionDTO>>> getMyQuestions() {
+        List<QuestionDTO> responseData = questionService.getMyQuestions()
+                .stream()
+                .map(QuestionDTO::buildQuestionDTOFromModel)
+                .toList();
+
+        return ResponseEntity.ok(
+                ResponseJSON.success(200, "Domande recuperate con successo.", responseData)
+        );
+    }
+
 }

@@ -8,6 +8,7 @@ import com.superquizzettone.model.QuestionStatus;
 import com.superquizzettone.model.User;
 import com.superquizzettone.repository.question.QuestionRepository;
 import com.superquizzettone.security.SecurityUtils;
+import com.superquizzettone.service.utente.UserService;
 import com.superquizzettone.web.api.exception.BadRequestException;
 import com.superquizzettone.web.api.exception.ForbiddenException;
 import com.superquizzettone.web.api.exception.NotAllowedException;
@@ -34,6 +35,9 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Autowired
     private SecurityUtils securityUtils;
+
+    @Autowired
+    private UserService userService;
 
     public List<Question> listAll(){
         return questionRepository.findAll();
@@ -97,20 +101,10 @@ public class QuestionServiceImpl implements QuestionService {
         questionRepository.deleteById(id);
     }
 
-    public List<Question> findByCategory(Category category){
-
-        if (category == null){
-            throw new BadRequestException("La category risulta nulla");
-        }
-        return questionRepository.findByCategory(category);
-    }
-
-    public List<Question> findByTag(String tag){
-
-        if (tag == null){
-            throw new BadRequestException("Il tag della domanda risulta nullo");
-        }
-        return questionRepository.findByTag(tag);
+    @Override
+    public List<Question> getMyQuestions() {
+        Long idUser = SecurityUtils.getUserId();
+        return questionRepository.findByCreatedById(idUser);
     }
 
     public List<Question> findByExample(QuestionDTO example){

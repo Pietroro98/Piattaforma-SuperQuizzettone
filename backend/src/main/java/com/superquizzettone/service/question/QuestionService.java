@@ -14,7 +14,6 @@ public interface QuestionService {
     Question insertNew(QuestionDTO question);
     void remove(Long id);
 
-    List<Question> findByCategory(Category category);
-    List<Question> findByTag(String tag);
+    List<Question> getMyQuestions();
     List<Question> findByExample(QuestionDTO example);
 }
