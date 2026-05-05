@@ -1,7 +1,5 @@
 package com.superquizzettone.service.question;
-
 import com.superquizzettone.dto.MotivationDTO;
-import com.superquizzettone.dto.QuestionDTO;
 import com.superquizzettone.model.*;
 import com.superquizzettone.repository.answer.AnswerRepository;
 import com.superquizzettone.repository.category.CategoryRepository;
@@ -10,7 +8,6 @@ import com.superquizzettone.security.SanitizerUtil;
 import com.superquizzettone.security.SecurityUtils;
 import com.superquizzettone.service.utente.UserService;
 import com.superquizzettone.web.api.exception.BadRequestException;
-import com.superquizzettone.web.api.exception.ForbiddenException;
 import com.superquizzettone.web.api.exception.NotAllowedException;
 import com.superquizzettone.web.api.exception.NotFoundException;
 import io.micrometer.common.util.StringUtils;
@@ -108,7 +105,7 @@ public class QuestionServiceImpl implements QuestionService {
             }
 
             if (category.getQuestionStatus() == QuestionStatus.REJECTED) {
-                throw new BadRequestException("La categoria esiste gia ma risulta rifiutata e non puo essere riutilizzata");
+                throw new BadRequestException("La categoria esiste già ma risulta rifiutata e non puo essere riutilizzata");
             }
 
             question.setCategory(category);
