@@ -26,6 +26,10 @@ export const routes: Routes = [
   },
   {
     path: 'question-list',
+    //component: QuestionCreatorComponent,
+  },
+   {
+    path: 'question-creation',
     component: QuestionCreatorComponent,
   },
   {

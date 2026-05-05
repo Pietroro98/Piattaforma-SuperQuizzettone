@@ -9,22 +9,27 @@ import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Va
 })
 export class QuestionCreatorComponent {
 
-   form: FormGroup;
+  form: FormGroup;
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
-      text: ['', Validators.required],
+      inputQuestion: ['', Validators.required],
+      type: ['SINGOLA'],
+      categoryMode: ['select'],
       category: [''],
-      tags: [''],
+      tag: [''],
       answers: this.fb.array([])
     });
-
     this.initAnswers();
   }
 
   get answers(): FormArray {
     return this.form.get('answers') as FormArray;
   }
+
+  get categoryMode(): 'select' | 'add' {
+  return this.form.get('categoryMode')?.value;
+}
 
   initAnswers() {
     ['A', 'B', 'C', 'D'].forEach(label => {
@@ -35,7 +40,7 @@ export class QuestionCreatorComponent {
   createAnswer(label: string): FormGroup {
     return this.fb.group({
       label: [label],
-      text: ['', Validators.required],
+      inputAnswer: ['', Validators.required],
       isCorrect: [false]
     });
   }

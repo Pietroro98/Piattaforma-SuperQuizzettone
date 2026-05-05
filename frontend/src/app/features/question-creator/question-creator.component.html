@@ -1,27 +1,28 @@
 <div class="container py-4">
     <div class="card-custom mx-auto" style="max-width: 900px;" [formGroup]="form">
-            <h3>Inserisci una domanda:</h3>
+        <h3>Inserisci una domanda:</h3>
 
         <!-- DOMANDA -->
         <label class="mb-2 text-muted small">DOMANDA</label>
-        <textarea class="textarea-custom w-100 mb-3" formControlName="text"
+        <textarea class="textarea-custom w-100 mb-3" formControlName="inputQuestion"
             placeholder="Scrivi la domanda..."></textarea>
 
-        @if (form.get('text')?.invalid && form.get('text')?.touched) {
+        @if (form.get('inputQuestion')?.invalid && form.get('inputQuestion')?.touched) {
         <div class="text-danger small mb-3">
             La domanda è obbligatoria
         </div>
         }
 
         <section class="d-flex justify-content-end">
-            <select class="form-select mb-3">
-                <option selected value="1">Singola</option>
-                <option value="2">Multipla</option>
-                <option value="3">Vero-Falso</option>
+            <select class="form-select mb-3" formControlName="type">
+                <option selected value="SINGOLA">Singola</option>
+                <option value="MULTIPLA">Multipla</option>
+                <option value="VEROFALSO">Vero-Falso</option>
             </select>
         </section>
 
         <!-- RISPOSTE -->
+        @if (form.get('type')?.value === 'SINGOLA' || form.get('type')?.value === 'MULTIPLA' ) {
         <div class="d-flex flex-column gap-2 mb-3" formArrayName="answers">
 
             @for (answer of answers.controls; track answer; let i = $index) {
@@ -30,14 +31,20 @@
 
                 <strong>{{answer.value.label}}</strong>
 
-                <input class="input-custom flex-grow-1" formControlName="text" placeholder="Scrivi risposta..." />
+                <input class="input-custom flex-grow-1" formControlName="inputAnswer"
+                    placeholder="Scrivi risposta..." />
 
                 @if (i > 3) {
                 <span class="text-danger pointer" (click)="removeAnswer(i)">✖</span>
                 }
 
+                @if (form.get('type')?.value === 'SINGOLA') {
                 <input type="radio" [checked]="answer.get('isCorrect')?.value" (change)="setCorrect(i)" />
+                }
 
+                @if (form.get('type')?.value === 'MULTIPLA') {
+                <input type="checkbox" formControlName="isCorrect" />
+                }
             </div>
             }
 
@@ -47,29 +54,37 @@
         <button class="border add-answer mb-5 d-block" (click)="addAnswer()">
             + Aggiungi risposta
         </button>
+        }
 
         <!-- CONFIG -->
-        <div class="btn-group mb-2" role="group">
-            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-            <label class="btn btn-outline-primary" for="btnradio1">Seleziona categoria</label>
-
-            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-            <label class="btn btn-outline-primary" for="btnradio2">Aggiungi categoria</label>
-
+        <div class="btn-group mb-2 mt-3" role="group">
+            <input type="radio" class="btn-check" name="categoryMode" id="selectCategory" autocomplete="off"
+                formControlName="categoryMode" value="select">
+            <label class="btn btn-outline-primary" for="selectCategory">Seleziona categoria</label>
+            <input type="radio" class="btn-check" name="categoryMode" id="addCategory" autocomplete="off"
+                formControlName="categoryMode" value="input">
+            <label class="btn btn-outline-primary" for="addCategory">Aggiungi categoria</label>
         </div>
+
 
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <label><strong>Categoria:</strong></label>
+                @if (categoryMode === 'select') {
+                <select class="form-select" formControlName="category">
+                    <option selected value="SINGOLA">Categoria 1</option>
+                    <option value="MULTIPLA">Categoria 2</option>
+                </select>
+                }
+                @else {
                 <input class="input-custom w-100" formControlName="category" placeholder="Categoria" />
+                }
             </div>
-
         </div>
-
 
         <div class="col-md-6 mb-4">
             <label><strong>Tag:</strong></label>
-            <input class="input-custom w-100" formControlName="tags" placeholder="Tag" />
+            <input class="input-custom w-100" formControlName="tag" placeholder="Tag" />
         </div>
 
         <!-- ACTIONS -->
