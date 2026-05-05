@@ -1,9 +1,13 @@
 import { Routes } from '@angular/router';
 import { HomepageComponent } from './features/homepage/homepage.component';
+<<<<<<< HEAD
 import { QuestionCreatorComponent } from './features/question-creator/question-creator.component';
 import { AuthComponent } from './features/authentication/auth/auth.component';
 import { LoginComponent } from './features/authentication/login/login.component';
 import { RegisterComponent } from './features/authentication/register/register.component';
+=======
+import { QuizComponent } from './features/quiz/quiz.component';
+>>>>>>> 3d1d0d7 (prova pagina quiz)
 
 export const routes: Routes = [
   {
@@ -14,6 +18,10 @@ export const routes: Routes = [
   {
     path: 'home',
     component: HomepageComponent,
+  },
+  {
+    path: 'quiz',
+    component: QuizComponent
   },
   {
     path: '',
@@ -36,5 +44,5 @@ export const routes: Routes = [
     path: '**',
     redirectTo: '/home',
     pathMatch: 'full'
-  },
+  }
 ];
