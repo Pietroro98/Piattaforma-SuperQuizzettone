@@ -2,23 +2,32 @@ package com.superquizzettone.web.api;
 
 import com.superquizzettone.dto.*;
 import com.superquizzettone.model.User;
+import com.superquizzettone.security.SecurityUtils;
+import com.superquizzettone.security.dto.UsernameCheckResponseDTO;
 import com.superquizzettone.service.utente.UserService;
 import com.superquizzettone.web.api.exception.IdNotNullForInsertException;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
 public class AdministratorUserController {
 
+    @Autowired
     private final UserService userService;
 
-    public AdministratorUserController(UserService userService) {
+    @Autowired
+    private final SecurityUtils securityUtils;
+
+    public AdministratorUserController(UserService userService, SecurityUtils securityUtils) {
         this.userService = userService;
+        this.securityUtils = securityUtils;
     }
 
     @GetMapping("/list-users")
@@ -46,16 +55,25 @@ public class AdministratorUserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseJSON<UserDTO>> createUser(@RequestBody @Valid UserDTO utenteInput) {
+    public ResponseEntity<ResponseJSON<Object>> createUser(@RequestBody @Valid UserDTO utenteInput) {
         if (utenteInput.getId() != null) {
             throw new IdNotNullForInsertException("Non è ammesso fornire un id per la creazione");
         }
+        Optional<UsernameCheckResponseDTO> suggerimenti = getSuggerimenti(utenteInput.getUsername());
+
         User userInserito = userService.inserisciNuovo(utenteInput.buildUtenteModel(false));
         UserDTO responseData = UserDTO.buildUtenteDTOFromModel(userInserito);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(ResponseJSON.success(201, "Utente creato con successo.", responseData));
+        ResponseEntity<ResponseJSON<Object>> result;
+        if(suggerimenti.isPresent()){
+            result = ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseJSON.success(200, "Lo username inserito non è valido, oecco alcuni suggerimenti per te", suggerimenti));
+        } else {
+            result = ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(ResponseJSON.success(201, "Utente creato con successo.", responseData));
+        }
+        return result;
     }
 
     @PutMapping("/modify/{id}")
@@ -103,6 +121,11 @@ public class AdministratorUserController {
                 )
         );
     }
+
+    private Optional<UsernameCheckResponseDTO> getSuggerimenti (String username) {
+        return securityUtils.checkUsername(username);
+    }
+
     /*
     @PatchMapping("/revoke-role/{id}")
     public ResponseEntity<ResponseJSON<UserUpdateDTO>> revokeRole(@PathVariable Long id, RoleDTO roleDTO){

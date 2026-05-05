@@ -1,19 +1,21 @@
 package com.superquizzettone.service.utente;
 import com.superquizzettone.dto.AdministratorUserUpdateDTO;
+import com.superquizzettone.dto.ResponseJSON;
 import com.superquizzettone.dto.UserUpdateDTO;
 import com.superquizzettone.model.*;
 import com.superquizzettone.repository.ruolo.RoleRepository;
 import com.superquizzettone.repository.utente.UserRepository;
 import com.superquizzettone.security.SecurityUtils;
-import com.superquizzettone.web.api.exception.BadRequestException;
-import com.superquizzettone.web.api.exception.ForbiddenException;
-import com.superquizzettone.web.api.exception.NotAllowedException;
-import com.superquizzettone.web.api.exception.NotFoundException;
+import com.superquizzettone.security.dto.UsernameCheckResponseDTO;
+import com.superquizzettone.web.api.exception.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -169,13 +171,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User inserisciNuovo(User entity)
     {
+
         entity.setState(UserState.ATTIVO);
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         entity.setCreationDate(LocalDate.now());
         entity.setTotalPoints(0d);
+        entity.setAttempts(List.of());
+        entity.setMyQuiz(List.of());
 
         if (entity.getRoles() == null || entity.getRoles().isEmpty()) {
-            throw new RuntimeException("L'utente deve avere almeno un ruolo.");
+            throw new EmptyRoleException("L'utente deve avere almeno un ruolo.");
         }
 
         Set<Role> ruoliValidi = entity.getRoles().stream()
@@ -254,4 +259,5 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+
 }
