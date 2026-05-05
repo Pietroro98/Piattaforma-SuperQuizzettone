@@ -44,7 +44,11 @@ public class SecurityUtils {
     }
 
     public static Long getUserId() {
-        return ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User user) {
+            return user.getId();
+        }
+        throw new IllegalStateException("Il principal autenticato non espone di un id utente valido.");
     }
 
     private static final String DEFAULT_P = "player";

@@ -146,8 +146,12 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<Question> getMyQuestions() {
-        Long idUser = SecurityUtils.getUserId();
-        return questionRepository.findByCreatedById(idUser);
+        User userLoggato = userService.findByUsername(SecurityUtils.getUsername());
+        if (userLoggato == null) {
+            throw new NotFoundException("Utente autenticato non trovato");
+        }
+
+        return questionRepository.findByCreatedById(userLoggato.getId());
     }
 
     public List<Question> findByExample(Question example){
