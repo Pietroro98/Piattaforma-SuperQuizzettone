@@ -104,14 +104,14 @@ public class AdministratorUserController {
     }
 
     @PatchMapping("/assign-role/{id}")
-    public ResponseEntity<ResponseJSON<UserUpdateDTO>> assignRole(@PathVariable Long id, RoleDTO roleDTO) {
+    public ResponseEntity<ResponseJSON<UserUpdateDTO>> assignRole(@PathVariable Long id, @RequestBody Long roleId) {
         User utenteEsistente = userService.caricaSingoloUtente(id);
         if (utenteEsistente == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ResponseJSON.error(404, "L'utente con id: "+ id + " non esiste"));
         }
 
-        userService.assegnaRuolo(utenteEsistente, id, RoleDTO.createModelFromDTO(roleDTO));
+        userService.assegnaRuolo(utenteEsistente, id, roleId);
         UserUpdateDTO responseData = UserUpdateDTO.buildDTOFromModel(utenteEsistente);
         return ResponseEntity.ok(
                 ResponseJSON.success(200,
@@ -126,13 +126,15 @@ public class AdministratorUserController {
         return securityUtils.checkUsername(username);
     }
 
-    /*
-    @PatchMapping("/revoke-role/{id}")
-    public ResponseEntity<ResponseJSON<UserUpdateDTO>> revokeRole(@PathVariable Long id, RoleDTO roleDTO){
 
+    @PatchMapping("/revoke-role/{id}")
+    public ResponseEntity<ResponseJSON<UserUpdateDTO>> revokeRole(@PathVariable Long id, @RequestBody RoleDTO roleDTO){
+        UserUpdateDTO dto = userService.revocaRuolo(id, roleDTO);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseJSON.success(200, "ruolo cambiato con successo", dto));
     }
 
-     */
+
 /*
 
     revokeRole(Body Role)
