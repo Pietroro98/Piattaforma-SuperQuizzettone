@@ -35,7 +35,7 @@ public class UserDTO {
     private LocalDate creationDate;
 
     private Double totalPoints;
-    private List<RoleDTO> roles;
+    private Set<Role> roles;
     private Long[] roleIds;
 
     public UserDTO(Long id, String name, String surname, String username) {
@@ -56,6 +56,7 @@ public class UserDTO {
         model.setPassword(password);
         model.setCreationDate(creationDate);
         model.setTotalPoints(totalPoints);
+        model.setRoles(roles);
 
         if (roleIds != null) {
             Set<Role> ruoli = Arrays.stream(roleIds).map(Role::new).collect(Collectors.toSet());
@@ -69,7 +70,7 @@ public class UserDTO {
         UserDTO dto = new UserDTO(model.getId(), model.getName(), model.getSurname(), model.getUsername());
         dto.setCreationDate(model.getCreationDate());
         dto.setTotalPoints(model.getTotalPoints());
-        dto.setRoles(RoleDTO.createRuoloDTOListFromModelSet(model.getRoles()));
+        dto.setRoles(model.getRoles());
 
         return dto;
     }

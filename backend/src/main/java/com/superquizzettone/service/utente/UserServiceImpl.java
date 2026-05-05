@@ -1,19 +1,21 @@
 package com.superquizzettone.service.utente;
 import com.superquizzettone.dto.AdministratorUserUpdateDTO;
+import com.superquizzettone.dto.ResponseJSON;
 import com.superquizzettone.dto.UserUpdateDTO;
 import com.superquizzettone.model.*;
 import com.superquizzettone.repository.ruolo.RoleRepository;
 import com.superquizzettone.repository.utente.UserRepository;
 import com.superquizzettone.security.SecurityUtils;
-import com.superquizzettone.web.api.exception.BadRequestException;
-import com.superquizzettone.web.api.exception.ForbiddenException;
-import com.superquizzettone.web.api.exception.NotAllowedException;
-import com.superquizzettone.web.api.exception.NotFoundException;
+import com.superquizzettone.security.dto.UsernameCheckResponseDTO;
+import com.superquizzettone.web.api.exception.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -154,16 +156,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User assegnaRuolo(User user, Long id, Role role) {
+        if(user == null){
+            throw new NotFoundException("Utente cercato inesistente");
+        }
+        if (user.getRoles().contains(role)){
+            throw new BadRequestException("L'utente possiede già il ruolo scelto");
+        }
+        user.getRoles().add(role);
+        return user;
+    }
+
+    @Override
     @Transactional
     public User inserisciNuovo(User entity)
     {
+
         entity.setState(UserState.ATTIVO);
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         entity.setCreationDate(LocalDate.now());
         entity.setTotalPoints(0d);
+        entity.setAttempts(List.of());
+        entity.setMyQuiz(List.of());
 
         if (entity.getRoles() == null || entity.getRoles().isEmpty()) {
-            throw new RuntimeException("L'utente deve avere almeno un ruolo.");
+            throw new EmptyRoleException("L'utente deve avere almeno un ruolo.");
         }
 
         Set<Role> ruoliValidi = entity.getRoles().stream()
@@ -215,7 +232,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("Utente autenticato non trovato."));
 
         user.setName(userUpdateDTO.getName());
-        user.setUsername(userUpdateDTO.getSurname());
+        user.setSurname(userUpdateDTO.getSurname());
 
         return userRepository.save(user);
     }
@@ -242,4 +259,5 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+
 }
