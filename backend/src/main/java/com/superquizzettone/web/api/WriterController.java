@@ -6,7 +6,6 @@ import com.superquizzettone.service.question.QuestionService;
 import com.superquizzettone.service.quiz.QuizService;
 import com.superquizzettone.web.api.exception.IdNotNullForInsertException;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +29,8 @@ public class WriterController {
         if (questionInput.getId() != null) {
             throw new IdNotNullForInsertException("Non è ammesso fornire un id per la creazione");
         }
-
-        Question questionInserita = questionService.insertNew(questionInput);
-        QuestionDTO responseData = QuestionDTO.buildQuestionDTOFromModel(questionInserita);
+        Question question = questionService.insertNew(questionInput.buildQuestionModel(true));
+        QuestionDTO responseData = QuestionDTO.buildQuestionDTOFromModel(question);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -50,7 +48,7 @@ public class WriterController {
         }
 
         questionInput.setId(id);
-        Question questionAggiornata = questionService.update(questionInput);
+        Question questionAggiornata = questionService.update(questionInput.buildQuestionModel(true));
         QuestionDTO responseData = QuestionDTO.buildQuestionDTOFromModel(questionAggiornata);
 
         return ResponseEntity.ok(
