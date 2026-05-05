@@ -6,6 +6,8 @@ export interface Question {
     answers: Answer[];
     category: Category;
     tag: string;
+    status?: string;
+    type?: string;
     motivationRejection?: string;
 }
 
