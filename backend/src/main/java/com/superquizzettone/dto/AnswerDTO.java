@@ -2,7 +2,6 @@ package com.superquizzettone.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.superquizzettone.model.Answer;
-import com.superquizzettone.model.Question;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +18,6 @@ public class AnswerDTO {
     @NotBlank(message = "description non può essere nullo o vuoto")
     private String description;
     private boolean correct;
-    private Question question;
 
     public static AnswerDTO buildAnswerDTOfromModel(Answer answer) {
         AnswerDTO dto = new AnswerDTO();
@@ -30,12 +28,11 @@ public class AnswerDTO {
     }
 
 
-    public Answer buildAnswerModelFromDTO(AnswerDTO answerDTO) {
+    public static Answer buildAnswerModelFromDTO(AnswerDTO answerDTO) {
         Answer answer = new Answer();
-        answer.setId(this.id);
-        answer.setDescription(this.description);
-        answer.setCorrect(this.isCorrect());
-        answer.setQuestion(answerDTO.getQuestion());
+        answer.setId(answerDTO.getId());
+        answer.setDescription(answerDTO.getDescription());
+        answer.setCorrect(answerDTO.isCorrect());
         return answer;
     }
 }

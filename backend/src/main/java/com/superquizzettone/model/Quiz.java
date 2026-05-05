@@ -27,8 +27,7 @@ public class Quiz {
     @Column(name = "name", unique = true, nullable = false)
     private String name;
 
-    @OneToMany
-    @JoinColumn(name = "quiz_id")
+    @OneToMany(mappedBy = "quiz")
     private List<Question> questions = new ArrayList<>();
 
     @Column(name = "quiz_time")

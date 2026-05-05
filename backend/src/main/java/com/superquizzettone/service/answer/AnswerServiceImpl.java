@@ -26,26 +26,23 @@ public class AnswerServiceImpl implements AnswerService{
     }
 
     @Transactional
-    public void update(AnswerDTO answer){
-
-        Answer result = answer.buildAnswerModelFromDTO(answer);
-        answerRepository.save(result);
+    public void update(Answer answer) {
+        if (answer == null || answer.getId() == null){
+            throw new BadRequestException("Risposta inserita risulta nulla");
+        }
+        answerRepository.save(answer);
     }
 
     @Transactional
-    public void insertNew(AnswerDTO answer){
-
+    public void insertNew(Answer answer) {
         if (answer == null){
             throw new BadRequestException("Risposte inserite risultano nulle");
         }
-
-        Answer result = answer.buildAnswerModelFromDTO(answer);
-        answerRepository.save(result);
+        answerRepository.save(answer);
     }
 
     @Transactional
     public void remove(Long id){
-
         if (id == null){
             throw new BadRequestException("l'id risulta nullo");
         }
