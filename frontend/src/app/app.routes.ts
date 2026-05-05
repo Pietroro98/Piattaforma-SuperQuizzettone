@@ -24,10 +24,10 @@ export const routes: Routes = [
       { path: '', redirectTo: 'login', pathMatch: 'full' }
     ]
   },
-  {
+   {
     path: 'question-list',
-    //component: QuestionCreatorComponent,
-  },
+    component: QuestionCreatorComponent, //CAMBIARE COMPONENTE CON QUELLO DELLA LISTA DI DOMANDE
+  }, 
    {
     path: 'question-creation',
     component: QuestionCreatorComponent,
