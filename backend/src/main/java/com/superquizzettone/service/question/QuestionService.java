@@ -1,6 +1,7 @@
 package com.superquizzettone.service.question;
 
 import com.superquizzettone.dto.MotivationDTO;
+import com.superquizzettone.dto.QuestionDTO;
 import com.superquizzettone.model.Question;
 
 import java.util.List;

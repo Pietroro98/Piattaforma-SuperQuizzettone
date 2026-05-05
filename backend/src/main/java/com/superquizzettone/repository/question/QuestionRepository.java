@@ -3,11 +3,14 @@ package com.superquizzettone.repository.question;
 import com.superquizzettone.model.Question;
 import com.superquizzettone.model.QuestionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    List<Question> findByCreatedById(Long idUser);
+    @Query("select q from Question q where q.createdBy.id = :userId")
+    List<Question> findMyQuestionsByUserId(@Param("userId") Long userId);
 
-    List<Question> findByCreatedByIdAndStatus(Long idUser, QuestionStatus status);
+    List<Question> findByStatus( QuestionStatus status);
 }

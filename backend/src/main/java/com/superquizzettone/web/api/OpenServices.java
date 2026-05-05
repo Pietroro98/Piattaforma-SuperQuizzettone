@@ -2,6 +2,7 @@ package com.superquizzettone.web.api;
 
 import com.superquizzettone.dto.QuestionDTO;
 import com.superquizzettone.dto.ResponseJSON;
+import com.superquizzettone.model.Question;
 import com.superquizzettone.service.question.QuestionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,13 +35,15 @@ public class OpenServices {
 
     @GetMapping("/get-my-questions")
     public ResponseEntity<ResponseJSON<List<QuestionDTO>>> getMyQuestions() {
-        List<QuestionDTO> responseData = questionService.getMyQuestions()
+
+        List<Question> quest = questionService.getMyQuestions();
+
+         List<QuestionDTO> reponseData = quest
                 .stream()
                 .map(QuestionDTO::buildQuestionDTOFromModel)
                 .toList();
-
         return ResponseEntity.ok(
-                ResponseJSON.success(200, "Domande recuperate con successo.", responseData)
+                ResponseJSON.success(200, "Domande recuperate con successo.", reponseData)
         );
     }
 }

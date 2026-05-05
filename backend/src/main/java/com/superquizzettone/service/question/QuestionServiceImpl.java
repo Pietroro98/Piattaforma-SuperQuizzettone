@@ -148,14 +148,15 @@ public class QuestionServiceImpl implements QuestionService {
             throw new NotFoundException("Utente autenticato non trovato");
         }
 
-        if (userLoggato.getRoles().stream().anyMatch(role -> Role.ROLE_REVIEWER.equals(role.getCode()))) {
-            return questionRepository.findByCreatedByIdAndStatus(
-                    userLoggato.getId(),
+       boolean verifica =  userLoggato.getRoles().stream().anyMatch(role -> Role.ROLE_REVIEWER.equals(role.getCode()));
+
+        if (verifica) {
+            return questionRepository.findByStatus(
                     QuestionStatus.IN_REVIEW
             );
         }
 
-        return questionRepository.findByCreatedById(userLoggato.getId());
+        return questionRepository.findMyQuestionsByUserId(userLoggato.getId());
     }
 
     public List<Question> findByExample(Question example){
