@@ -82,4 +82,17 @@ public class CustomExceptionHandler  {
 				.body(ResponseJSON.error(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
 	}
 
+	@ExceptionHandler(UsernameNotValidException.class)
+	public ResponseEntity<ResponseJSON<Void>> handleUsernameNotValidException(UsernameNotValidException ex, WebRequest request) {
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(ResponseJSON.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+	}
+	@ExceptionHandler(EmptyRoleException.class)
+	public ResponseEntity<ResponseJSON<Void>> handleEmptyRoleException(EmptyRoleException ex, WebRequest request) {
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(ResponseJSON.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+	}
+
 }

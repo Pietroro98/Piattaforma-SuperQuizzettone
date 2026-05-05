@@ -1,10 +1,7 @@
 package com.superquizzettone.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.superquizzettone.model.Category;
-import com.superquizzettone.model.Question;
-import com.superquizzettone.model.QuestionStatus;
-import com.superquizzettone.model.QuestionType;
+import com.superquizzettone.model.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +28,7 @@ public class QuestionDTO {
     private String description;
 
     @NotNull(message = "answers non può essere nullo")
-    @Size(min = 2, message = "answers deve contenere almeno 2 elementi")
+    @Size(min = 4, message = "answers deve contenere almeno 2 elementi")
     @Valid
     private List<AnswerDTO> answers;
 
@@ -37,8 +36,15 @@ public class QuestionDTO {
     private CategoryDTO category;
     private String tag;
     private String motivationRejection;
+
+    @NotNull(message = "Lo stato non può essere nullo")
     private QuestionStatus status;
+
+    @NotNull(message = "Il tipo non può essere nullo")
     private QuestionType type;
+
+    private User reviewedBy;
+    private LocalDateTime approvalDate;
 
 
     public static QuestionDTO buildQuestionDTOFromModel(Question questionModel){
@@ -51,6 +57,8 @@ public class QuestionDTO {
         result.setMotivationRejection(questionModel.getMotivationRejection());
         result.setStatus(questionModel.getStatus());
         result.setType(questionModel.getType());
+        result.setReviewedBy(questionModel.getReviewedBy());
+        result.setApprovalDate(questionModel.getApprovalDate());
 
         if (questionModel.getAnswers() != null) {
             result.setAnswers(
@@ -75,17 +83,19 @@ public class QuestionDTO {
         result.setMotivationRejection(motivationRejection);
         result.setStatus(status);
         result.setType(type);
+        result.setReviewedBy(reviewedBy);
+        result.setApprovalDate(approvalDate);
 
         if (includeAnswers && this.answers != null){
-
-            result.setAnswers
-                    (this.answers
-                            .stream()
-                            .map(answerDTO -> answerDTO.buildAnswerModelFromDTO(answerDTO))
-                            .collect(Collectors.toList()));
+            List<Answer> mappedAnswers = this.answers
+                    .stream()
+                    .map(AnswerDTO::buildAnswerModelFromDTO)
+                    .collect(Collectors.toList());
+            mappedAnswers.forEach(answer -> answer.setQuestion(result));
+            result.setAnswers(mappedAnswers);
         }
         else {
-            result.setAnswers(Collections.emptyList());
+            result.setAnswers(new ArrayList<>());
         }
         return result;
     }

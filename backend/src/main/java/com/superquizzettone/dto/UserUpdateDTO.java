@@ -33,6 +33,16 @@ public class UserUpdateDTO {
         return model;
     }
 
+    public static UserUpdateDTO buildDTOFromModel(User model){
+        UserUpdateDTO dto = new UserUpdateDTO();
+        dto.setName(model.getName());
+        dto.setSurname(model.getSurname());
+        dto.setUsername(model.getUsername());
+        dto.setRoles(RoleDTO.createRuoloDTOListFromModelSet(model.getRoles()));
+
+        return dto;
+    }
+
     public List<Role> getRuoli() {
         if (rolesIds != null) {
             return Arrays.stream(rolesIds).map(Role::new).collect(Collectors.toList());

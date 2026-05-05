@@ -17,4 +17,5 @@ public interface UserService {
     User aggiornaProfilo(UserUpdateDTO userUpdateDTO);
     void changePassword(String currentPassword, String newPassword, String confirmPassword);
     User aggiornaComeAdmin(AdministratorUserUpdateDTO userUpdateDTO, Long id);
+    User assegnaRuolo(User User, Long id, Role role);
 }

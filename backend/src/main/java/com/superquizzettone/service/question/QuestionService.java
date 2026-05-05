@@ -1,7 +1,6 @@
 package com.superquizzettone.service.question;
 
-import com.superquizzettone.dto.QuestionDTO;
-import com.superquizzettone.model.Category;
+import com.superquizzettone.dto.MotivationDTO;
 import com.superquizzettone.model.Question;
 
 import java.util.List;
@@ -10,11 +9,11 @@ public interface QuestionService {
 
     List<Question> listAll();
     Question getSingleElement(Long id);
-    void update(QuestionDTO question);
-    void insertNew(QuestionDTO question);
+    Question update(Question question);
+    Question insertNew(Question question);
     void remove(Long id);
 
-    List<Question> findByCategory(Category category);
-    List<Question> findByTag(String tag);
-    List<Question> findByExample(QuestionDTO example);
+    List<Question> getMyQuestions();
+    List<Question> findByExample(Question example);
+    Question rejectQuestion(MotivationDTO motivationDTO);
 }

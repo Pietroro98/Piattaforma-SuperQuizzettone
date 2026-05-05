@@ -2,6 +2,7 @@ package com.superquizzettone.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.superquizzettone.model.Category;
+import com.superquizzettone.model.QuestionStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,23 +21,22 @@ public class CategoryDTO {
     @NotBlank(message = "Il nome non può essere nullo")
     private String name;
 
-    @NotBlank(message = "La descrizione non può essere nulla")
-    private String description;
-
+    @NotBlank(message = "lo stato non può essere nullo")
+    private QuestionStatus questionStatus;
     public CategoryDTO() {}
 
     public static CategoryDTO buildDTOFromModel(Category model) {
         return new CategoryDTO(
                 model.getId(),
                 model.getName(),
-                model.getDescription()
+                model.getQuestionStatus()
         );
     }
 
     public static Category buildModelFromDTO(CategoryDTO dto) {
         Category result = new Category();
+        result.setId(dto.getId());
         result.setName(dto.getName());
-        result.setDescription(dto.getDescription());
         return result;
     }
 

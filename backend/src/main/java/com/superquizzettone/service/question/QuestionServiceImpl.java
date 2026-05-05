@@ -1,16 +1,18 @@
 package com.superquizzettone.service.question;
 
-import ch.qos.logback.core.util.StringUtil;
+import com.superquizzettone.dto.MotivationDTO;
 import com.superquizzettone.dto.QuestionDTO;
-import com.superquizzettone.model.Category;
-import com.superquizzettone.model.Question;
-import com.superquizzettone.model.QuestionStatus;
-import com.superquizzettone.model.User;
+import com.superquizzettone.model.*;
+import com.superquizzettone.repository.answer.AnswerRepository;
+import com.superquizzettone.repository.category.CategoryRepository;
 import com.superquizzettone.repository.question.QuestionRepository;
+import com.superquizzettone.security.SanitizerUtil;
 import com.superquizzettone.security.SecurityUtils;
+import com.superquizzettone.service.utente.UserService;
 import com.superquizzettone.web.api.exception.BadRequestException;
 import com.superquizzettone.web.api.exception.ForbiddenException;
 import com.superquizzettone.web.api.exception.NotAllowedException;
+import com.superquizzettone.web.api.exception.NotFoundException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -20,11 +22,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class QuestionServiceImpl implements QuestionService {
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -33,7 +40,7 @@ public class QuestionServiceImpl implements QuestionService {
     private EntityManager entityManager;
 
     @Autowired
-    private SecurityUtils securityUtils;
+    private UserService userService;
 
     public List<Question> listAll(){
         return questionRepository.findAll();
@@ -44,50 +51,86 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Transactional
-    public void update(QuestionDTO question) {
+    public Question update(Question question) {
 
-        if (SecurityUtils.isPlayer() || SecurityUtils.isReviewer() || SecurityUtils.isAdministrator() ){
-            throw new ForbiddenException("Non puoi modificare una domanda, non sei un writer");
-        }
-
-        if (question == null){
-            throw new BadRequestException("Le modifiche inserite sono nulle");
+        if (question == null || question.getId() == null ){
+            throw new NotAllowedException("La question inserita risulta nulla.");
         }
 
         if (question.getAnswers().size() < 2 || question.getAnswers().size() > 10){
             throw new BadRequestException("Numero di risposte violato");
         }
 
-        Question model = question.buildQuestionModel(true);
-        questionRepository.save(model);
+        return questionRepository.save(question);
     }
 
     @Transactional
-    public void insertNew(QuestionDTO question){
+    public Question insertNew(Question question){
 
-        if (SecurityUtils.isPlayer() || SecurityUtils.isReviewer() || SecurityUtils.isAdministrator()){
-            throw new ForbiddenException("Non puoi inserire una domanda, non sei un writer");
+        if (question == null ){
+            throw new NotAllowedException("La question inserita risulta nulla.");
         }
 
-        if (question == null){
-            throw new NotAllowedException("La question inserita risulta nulla, riprova scemo");
+        if (question.getId() != null) {
+            throw new BadRequestException("Una nuova question non puo avere un id valorizzato");
         }
 
-        if (question.getDescription() == null || question.getCategory() == null || question.getTag() == null || question.getAnswers() == null){
-            throw new BadRequestException("La question ha dei campi mancanti, ricontrolla broski");
-        }
-
-        if (question.getType() == null) {
-            throw new BadRequestException("Il type della question non puo essere nullo");
+        if (question.getAnswers() == null) {
+            throw new BadRequestException("La question deve contenere almeno 4 risposte");
         }
 
         if (question.getAnswers().size() < 2 || question.getAnswers().size() > 10){
             throw new BadRequestException("Numero di risposte violato");
         }
 
+        User userLoggato = userService.findByUsername(SecurityUtils.getUsername());
+        if (userLoggato == null) {
+            throw new NotFoundException("Utente autenticato non trovato");
+        }
+
+        if (question.getCategory() != null) {
+            Category requestCategory = question.getCategory();
+            Category category;
+
+            if (requestCategory.getId() != null) {
+                category = categoryRepository.findById(requestCategory.getId())
+                        .orElseThrow(() -> new NotFoundException("Categoria non trovata con id: " + requestCategory.getId()));
+            } else {
+                if (requestCategory.getName() == null || requestCategory.getName().isBlank()) {
+                    throw new BadRequestException("Il nome della categoria non puo essere nullo o vuoto");
+                }
+
+                category = categoryRepository.findByName(requestCategory.getName())
+                        .orElseGet(() -> {
+                            requestCategory.setQuestionStatus(QuestionStatus.IN_REVIEW);
+                            return categoryRepository.save(requestCategory);
+                        });
+            }
+
+            if (category.getQuestionStatus() == QuestionStatus.REJECTED) {
+                throw new BadRequestException("La categoria esiste gia ma risulta rifiutata e non puo essere riutilizzata");
+            }
+
+            question.setCategory(category);
+        }
+
+        List<Answer> answers = new ArrayList<>(question.getAnswers());
+        question.setAnswers(new ArrayList<>());
+
         question.setStatus(QuestionStatus.IN_REVIEW);
-        Question model = question.buildQuestionModel(true);
-        questionRepository.save(model);
+        question.setCreatedBy(userLoggato);
+
+        Question savedQuestion = questionRepository.save(question);
+
+        for (Answer answer : answers) {
+            answer.setId(null);
+            answer.setQuestion(savedQuestion);
+        }
+
+        List<Answer> savedAnswers = answerRepository.saveAll(answers);
+        savedQuestion.setAnswers(savedAnswers);
+
+        return savedQuestion;
     }
 
     @Transactional
@@ -101,23 +144,17 @@ public class QuestionServiceImpl implements QuestionService {
         questionRepository.deleteById(id);
     }
 
-    public List<Question> findByCategory(Category category){
-
-        if (category == null){
-            throw new BadRequestException("La category risulta nulla");
+    @Override
+    public List<Question> getMyQuestions() {
+        User userLoggato = userService.findByUsername(SecurityUtils.getUsername());
+        if (userLoggato == null) {
+            throw new NotFoundException("Utente autenticato non trovato");
         }
-        return questionRepository.findByCategory(category);
+
+        return questionRepository.findByCreatedById(userLoggato.getId());
     }
 
-    public List<Question> findByTag(String tag){
-
-        if (tag == null){
-            throw new BadRequestException("Il tag della domanda risulta nullo");
-        }
-        return questionRepository.findByTag(tag);
-    }
-
-    public List<Question> findByExample(QuestionDTO example){
+    public List<Question> findByExample(Question example){
 
         if (example == null){
             throw new BadRequestException("Elemento di ricerca invalido (example nulla)");
@@ -174,5 +211,38 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         return typedQuery.getResultList();
+    }
+
+
+    @Transactional
+    public Question rejectQuestion(MotivationDTO motivationDTO) {
+
+        if (motivationDTO == null || motivationDTO.getQuestion_id() == null) {
+            throw new BadRequestException("L'id della question risulta nullo");
+        }
+
+        String sanitizedMotivation = SanitizerUtil.sanitize(motivationDTO.getMotivationRejection());
+        if (sanitizedMotivation == null || sanitizedMotivation.isBlank()) {
+            throw new BadRequestException("La motivazione del rifiuto risulta nulla o vuota");
+        }
+
+        Long idQuestion = motivationDTO.getQuestion_id();
+        Question question = questionRepository.findById(idQuestion)
+                .orElseThrow(() -> new NotFoundException("Question non trovata con id: " + idQuestion));
+
+        question.setMotivationRejection(sanitizedMotivation);
+
+        if(motivationDTO.getStatus() == QuestionStatus.IN_REVIEW){
+            throw new NotAllowedException("Errore durante l'inserimento dello stato question");
+        }
+
+        if (motivationDTO.getStatus() == QuestionStatus.DRAFT) {
+            question.setStatus(QuestionStatus.DRAFT);
+        } else if(motivationDTO.getStatus() == QuestionStatus.REJECTED) {
+            question.setStatus(QuestionStatus.REJECTED);
+        } else {
+            question.setStatus(QuestionStatus.ACCEPTED);
+        }
+        return questionRepository.save(question);
     }
 }
