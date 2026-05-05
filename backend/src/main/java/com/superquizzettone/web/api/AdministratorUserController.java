@@ -129,17 +129,18 @@ public class AdministratorUserController {
                 .body(ResponseJSON.success(200, "ruolo cambiato con successo", dto));
     }
 
+    @PutMapping("/disableUser/{id}")
+    public ResponseEntity<ResponseJSON<UserStatusDTO>> disableUser(@PathVariable Long id){
+
+    }
+
     private Optional<UsernameCheckResponseDTO> getSuggerimenti (String username) {
         return securityUtils.checkUsername(username);
     }
 
-
-/*
-
-    revokeRole(Body Role)
-    endpoint: PATCH ../admin/revoke-role/{id}
+    /*
     disableUser(id Long):
     endpoint: PUT/(PATCH) ../admin/disable/{id}
-*/
+    */
 
 }
