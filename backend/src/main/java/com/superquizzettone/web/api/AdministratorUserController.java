@@ -122,16 +122,15 @@ public class AdministratorUserController {
         );
     }
 
-    private Optional<UsernameCheckResponseDTO> getSuggerimenti (String username) {
-        return securityUtils.checkUsername(username);
-    }
-
-
     @PatchMapping("/revoke-role/{id}")
-    public ResponseEntity<ResponseJSON<UserUpdateDTO>> revokeRole(@PathVariable Long id, @RequestBody RoleDTO roleDTO){
-        UserUpdateDTO dto = userService.revocaRuolo(id, roleDTO);
+    public ResponseEntity<ResponseJSON<UserUpdateDTO>> revokeRole(@PathVariable Long id, @RequestBody Long roleId){
+        UserUpdateDTO dto = userService.revocaRuolo(id, roleId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseJSON.success(200, "ruolo cambiato con successo", dto));
+    }
+
+    private Optional<UsernameCheckResponseDTO> getSuggerimenti (String username) {
+        return securityUtils.checkUsername(username);
     }
 
 

@@ -185,7 +185,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserUpdateDTO revocaRuolo(Long id, RoleDTO roleDTO) {
+    public UserUpdateDTO revocaRuolo(Long id, Long roleId) {
         User entity = userRepository.findById(id).orElse(null);
 
         if (entity == null) {
@@ -197,10 +197,12 @@ public class UserServiceImpl implements UserService {
         if (entity.getRoles().size() == 1) {
             throw new ForbiddenException("Impossibile togliere ruoli ad un utente che ne ha solo 1");
         }
-        if (entity.getRoles().equals(Role.ROLE_ADMINISTRATOR)) {
+        Role ruoloDaTogliere = roleService.caricaSingoloElemento(roleId);
+        boolean isAdmin = entity.getRoles().stream()
+                .anyMatch(r -> r.getId().equals(ruoloDaTogliere.getId()));
+        if (isAdmin) {
             throw new ForbiddenException("Impossibile togliere il ruolo ad un altro admin");
         }
-        Role ruoloDaTogliere = RoleDTO.createModelFromDTO(roleDTO);
         entity.getRoles().remove(ruoloDaTogliere);
         userRepository.save(entity);
         return UserUpdateDTO.buildDTOFromModel(entity);
@@ -243,6 +245,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User disabilita(Long id) {
         User entity = caricaSingoloUtente(id);
         if (entity == null) {
