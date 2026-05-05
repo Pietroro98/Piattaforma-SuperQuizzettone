@@ -31,4 +31,16 @@ public class OpenServices {
                 ResponseJSON.success(200, "Lista domande recuperata con successo.", responseData)
         );
     }
+
+    @GetMapping("/get-my-questions")
+    public ResponseEntity<ResponseJSON<List<QuestionDTO>>> getMyQuestions() {
+        List<QuestionDTO> responseData = questionService.getMyQuestions()
+                .stream()
+                .map(QuestionDTO::buildQuestionDTOFromModel)
+                .toList();
+
+        return ResponseEntity.ok(
+                ResponseJSON.success(200, "Domande recuperate con successo.", responseData)
+        );
+    }
 }
