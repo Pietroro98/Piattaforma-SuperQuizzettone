@@ -1,7 +1,6 @@
 package com.superquizzettone.service.question;
 
 import com.superquizzettone.dto.MotivationDTO;
-import com.superquizzettone.dto.QuestionDTO;
 import com.superquizzettone.model.Question;
 
 import java.util.List;
@@ -17,4 +16,9 @@ public interface QuestionService {
     List<Question> getMyQuestions();
     List<Question> findByExample(Question example);
     Question rejectQuestion(MotivationDTO motivationDTO);
+
+    Question claimForReview(Long questionId);
+    List<Question> getQuestionsAvailableForReview();
+    List<Question> getMyClaimedQuestions();
+    Question reviewQuestion(MotivationDTO motivationDTO);
 }

@@ -15,8 +15,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -249,5 +251,65 @@ public class QuestionServiceImpl implements QuestionService {
             question.setStatus(QuestionStatus.ACCEPTED);
         }
         return questionRepository.save(question);
+    }
+
+    @Override
+    @Transactional
+    public Question claimForReview(Long questionId) {
+        if(questionId == null){
+            throw new BadRequestException("L'id della question risulta nullo");
+        }
+
+        User userLoggato = userService.findByUsername(SecurityUtils.getUsername());
+        if(userLoggato == null){
+            throw new NotFoundException("Utente autenticato non trovato");
+        }
+
+        Question question = questionRepository.findById(questionId).orElseThrow(() ->
+                new NotFoundException("Question non trovata con id: " + questionId));
+
+        if (question.getStatus() == QuestionStatus.UNDER_REVIEW) {
+            if(question.getReviewedBy() != null && question.getReviewedBy().getId().equals(userLoggato.getId())){
+                return question;
+            }
+            throw new NotAllowedException("La question è già presa in carico da un altro reviewer");
+        }
+
+        int updated = questionRepository.claimQuestion(
+                questionId,
+                userLoggato.getId(),
+                QuestionStatus.IN_REVIEW,
+                QuestionStatus.UNDER_REVIEW
+
+        );
+
+        if(updated == 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "La question non è più disponibile per la presa in carico");
+        }
+
+        return questionRepository.findById(questionId).orElseThrow(() ->
+                new NotFoundException("Question non trovata con id: " + questionId));
+    }
+
+    @Override
+    public List<Question> getQuestionsAvailableForReview() {
+        return questionRepository.findByStatus(QuestionStatus.IN_REVIEW);
+    }
+
+    @Override
+    public List<Question> getMyClaimedQuestions() {
+        User userLoggato = userService.findByUsername(SecurityUtils.getUsername());
+        if (userLoggato == null) {
+            throw new NotFoundException("Utente autenticato non trovato");
+        }
+
+        return questionRepository.findByStatusAndReviewedById(
+                QuestionStatus.UNDER_REVIEW,
+                userLoggato.getId());
+    }
+
+    @Override
+    public Question reviewQuestion(MotivationDTO motivationDTO) {
+        return null;
     }
 }

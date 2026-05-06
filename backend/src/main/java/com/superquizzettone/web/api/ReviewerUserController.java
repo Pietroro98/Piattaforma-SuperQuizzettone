@@ -6,6 +6,7 @@ import com.superquizzettone.dto.ResponseJSON;
 import com.superquizzettone.model.Question;
 import com.superquizzettone.service.question.QuestionService;
 import com.superquizzettone.service.utente.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,4 +46,30 @@ public class ReviewerUserController {
         );
     }
 
+    @GetMapping("/questions/in-review")
+    public ResponseEntity<ResponseJSON<List<QuestionDTO>>> getQuestionsInReview() {
+        List<QuestionDTO> responseData = questionService.getQuestionsAvailableForReview()
+                .stream()
+                .map(QuestionDTO::buildQuestionDTOFromModel)
+                .toList();
+
+        return ResponseEntity.ok(
+                ResponseJSON.success(200, "Lista domande in review caricata correttamente", responseData)
+        );
+    }
+
+    @GetMapping("/questions/{id}")
+    public ResponseEntity<ResponseJSON<QuestionDTO>> getQuestionDetails(@PathVariable Long id) {
+        Question question = questionService.getSingleElement(id);
+
+        if (question == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(ResponseJSON.error(404, "Domanda non trovata per id: " + id));
+        }
+
+        return ResponseEntity.ok(
+                ResponseJSON.success(200, "Domanda caricata correttamente", QuestionDTO.buildQuestionDTOFromModel(question))
+        );
+    }
 }
