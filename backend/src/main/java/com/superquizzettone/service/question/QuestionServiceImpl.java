@@ -60,6 +60,13 @@ public class QuestionServiceImpl implements QuestionService {
             throw new BadRequestException("Numero di risposte violato");
         }
 
+        Question existing = questionRepository.findById(question.getId())
+                .orElseThrow(() -> new NotFoundException("Question non trovata con id: " + question.getId()));
+
+        if (existing.getStatus() == QuestionStatus.UNDER_REVIEWER) {
+            throw new NotAllowedException("La question è attualmente presa in carico da un reviewer e non può essere modificata");
+        }
+
         return questionRepository.save(question);
     }
 
@@ -268,7 +275,7 @@ public class QuestionServiceImpl implements QuestionService {
         Question question = questionRepository.findById(questionId).orElseThrow(() ->
                 new NotFoundException("Question non trovata con id: " + questionId));
 
-        if (question.getStatus() == QuestionStatus.UNDER_REVIEW) {
+        if (question.getStatus() == QuestionStatus.UNDER_REVIEWER) {
             if(question.getReviewedBy() != null && question.getReviewedBy().getId().equals(userLoggato.getId())){
                 return question;
             }
@@ -279,7 +286,7 @@ public class QuestionServiceImpl implements QuestionService {
                 questionId,
                 userLoggato.getId(),
                 QuestionStatus.IN_REVIEW,
-                QuestionStatus.UNDER_REVIEW
+                QuestionStatus.UNDER_REVIEWER
 
         );
 
@@ -304,7 +311,7 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         return questionRepository.findByStatusAndReviewedById(
-                QuestionStatus.UNDER_REVIEW,
+                QuestionStatus.UNDER_REVIEWER,
                 userLoggato.getId());
     }
 

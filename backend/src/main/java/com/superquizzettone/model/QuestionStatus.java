@@ -4,7 +4,7 @@ public enum QuestionStatus {
 
     ACCEPTED,
     REJECTED,
-    UNDER_REVIEW,
+    UNDER_REVIEWER,
     IN_REVIEW,
     DRAFT
 }

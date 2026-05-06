@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/open-services")
-public class OpenServices {
+@RequestMapping("/api/open-controller")
+public class OpenController {
 
     private final QuestionService questionService;
 
-    public OpenServices(QuestionService questionService) {
+    public OpenController(QuestionService questionService) {
         this.questionService = questionService;
     }
 

@@ -72,4 +72,27 @@ public class ReviewerUserController {
                 ResponseJSON.success(200, "Domanda caricata correttamente", QuestionDTO.buildQuestionDTOFromModel(question))
         );
     }
+
+    @PostMapping("/questions/{id}/claim")
+    public ResponseEntity<ResponseJSON<QuestionDTO>> claimQuestion(@PathVariable Long id) {
+        Question question = questionService.claimForReview(id);
+        QuestionDTO responseData = QuestionDTO.buildQuestionDTOFromModel(question);
+
+        return ResponseEntity.ok(
+                ResponseJSON.success(200, "Question presa in carico correttamente", responseData)
+        );
+    }
+
+    @GetMapping("/questions/my-claimed")
+    public ResponseEntity<ResponseJSON<List<QuestionDTO>>> myClaimedQuestions() {
+
+        List<QuestionDTO> responseData = questionService.getMyClaimedQuestions()
+                .stream()
+                .map(QuestionDTO::buildQuestionDTOFromModel)
+                .toList();
+
+        return ResponseEntity.ok(
+                ResponseJSON.success(200, "Lista domande prese in carico caricata correttamente", responseData)
+        );
+    }
 }
