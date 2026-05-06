@@ -209,6 +209,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User abilita(Long id) {
+        User entity = caricaSingoloUtente(id);
+        if (entity == null) {
+            throw new RuntimeException("Utente non trovato.");
+        }
+
+        if(!entity.isDisabled()){
+            throw new AlreadyEnabledException("Utente già disabilitato");
+        }
+        entity.setState(UserState.ATTIVO);
+        return userRepository.save(entity);
+    }
+
+    @Override
     @Transactional
     public User inserisciNuovo(User entity) {
 
@@ -249,7 +263,11 @@ public class UserServiceImpl implements UserService {
     public User disabilita(Long id) {
         User entity = caricaSingoloUtente(id);
         if (entity == null) {
-            throw new RuntimeException("Elemento non trovato.");
+            throw new RuntimeException("Utente non trovato.");
+        }
+
+        if(entity.isDisabled()){
+            throw new AlreadyDisabledException("Utente già disabilitato");
         }
         entity.setState(UserState.DISABILITATO);
         return userRepository.save(entity);

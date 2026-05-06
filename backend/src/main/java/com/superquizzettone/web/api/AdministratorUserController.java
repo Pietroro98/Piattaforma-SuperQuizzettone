@@ -132,15 +132,23 @@ public class AdministratorUserController {
     @PutMapping("/disableUser/{id}")
     public ResponseEntity<ResponseJSON<UserStatusDTO>> disableUser(@PathVariable Long id){
 
+        User user = userService.disabilita(id);
+        UserStatusDTO response = UserStatusDTO.buildDTOFromModel(user);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseJSON.success(200, "Utente disabilitato con successo", response));
+
     }
 
     private Optional<UsernameCheckResponseDTO> getSuggerimenti (String username) {
         return securityUtils.checkUsername(username);
     }
 
-    /*
-    disableUser(id Long):
-    endpoint: PUT/(PATCH) ../admin/disable/{id}
-    */
+    @PutMapping ("/enableUser/{id}")
+    public ResponseEntity<ResponseJSON<UserStatusDTO>> enableUser(@PathVariable Long id){
+        User user = userService.abilita(id);
+        UserStatusDTO response = UserStatusDTO.buildDTOFromModel(user);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseJSON.success(200, "utente riabilitato con successo", response));
+    }
 
 }

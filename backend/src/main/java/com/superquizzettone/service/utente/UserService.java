@@ -20,4 +20,5 @@ public interface UserService {
     User aggiornaComeAdmin(AdministratorUserUpdateDTO userUpdateDTO, Long id);
     User assegnaRuolo(User User, Long id, Long roleId);
     UserUpdateDTO revocaRuolo(Long id, Long roleId);
+    User abilita(Long id);
 }
