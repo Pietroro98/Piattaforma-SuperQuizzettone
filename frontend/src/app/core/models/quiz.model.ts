@@ -9,7 +9,7 @@ export interface Quiz {
     questions: Question[];
     quizTime: string;
     totalPoints: number;
-    category: Category[]:
+    category: Category[];
     attempts: QuizPlayed[];
 }
 
