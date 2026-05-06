@@ -1,17 +1,21 @@
 package com.superquizzettone.service.utente;
+
 import com.superquizzettone.dto.AdministratorUserUpdateDTO;
 import com.superquizzettone.dto.ResponseJSON;
+import com.superquizzettone.dto.RoleDTO;
 import com.superquizzettone.dto.UserUpdateDTO;
 import com.superquizzettone.model.*;
 import com.superquizzettone.repository.ruolo.RoleRepository;
 import com.superquizzettone.repository.utente.UserRepository;
 import com.superquizzettone.security.SecurityUtils;
 import com.superquizzettone.security.dto.UsernameCheckResponseDTO;
+import com.superquizzettone.service.ruolo.RoleService;
 import com.superquizzettone.web.api.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +29,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                           RoleRepository roleRepository) {
+                           RoleRepository roleRepository, RoleService roleService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+        this.roleService = roleService;
     }
 
     @Override
@@ -156,21 +162,69 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User assegnaRuolo(User user, Long id, Role role) {
-        if(user == null){
-            throw new NotFoundException("Utente cercato inesistente");
+    @Transactional
+    public User assegnaRuolo(User user, Long id, Long roleId) {
+
+        if(roleId == null){
+            throw new NotFoundException("Id del ruolo non pervenuto");
         }
-        if (user.getRoles().contains(role)){
+        Role role = roleService.caricaSingoloElemento(roleId);
+        if (role == null){
+            throw new NotFoundException("Ruolo inesistente");
+        }
+
+        boolean alreadyHasRole = user.getRoles().stream()
+                .anyMatch(r -> r.getId().equals(role.getId()));
+
+        if (alreadyHasRole) {
             throw new BadRequestException("L'utente possiede già il ruolo scelto");
         }
         user.getRoles().add(role);
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public User inserisciNuovo(User entity)
-    {
+    public UserUpdateDTO revocaRuolo(Long id, Long roleId) {
+        User entity = userRepository.findById(id).orElse(null);
+
+        if (entity == null) {
+            throw new NotFoundException("Utente con id: " + id + " non disponibile");
+        }
+        if (entity.getRoles() == null) {
+            throw new BadRequestException("Impossibile trovare il ruolo da revocare");
+        }
+        if (entity.getRoles().size() == 1) {
+            throw new ForbiddenException("Impossibile togliere ruoli ad un utente che ne ha solo 1");
+        }
+        Role ruoloDaTogliere = roleService.caricaSingoloElemento(roleId);
+        boolean isAdmin = entity.getRoles().stream()
+                .anyMatch(r -> r.getId().equals(ruoloDaTogliere.getId()));
+        if (isAdmin) {
+            throw new ForbiddenException("Impossibile togliere il ruolo ad un altro admin");
+        }
+        entity.getRoles().remove(ruoloDaTogliere);
+        userRepository.save(entity);
+        return UserUpdateDTO.buildDTOFromModel(entity);
+    }
+
+    @Override
+    public User abilita(Long id) {
+        User entity = caricaSingoloUtente(id);
+        if (entity == null) {
+            throw new RuntimeException("Utente non trovato.");
+        }
+
+        if(!entity.isDisabled()){
+            throw new AlreadyEnabledException("Utente già disabilitato");
+        }
+        entity.setState(UserState.ATTIVO);
+        return userRepository.save(entity);
+    }
+
+    @Override
+    @Transactional
+    public User inserisciNuovo(User entity) {
 
         entity.setState(UserState.ATTIVO);
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
@@ -205,10 +259,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User disabilita(Long id) {
         User entity = caricaSingoloUtente(id);
         if (entity == null) {
-            throw new RuntimeException("Elemento non trovato.");
+            throw new RuntimeException("Utente non trovato.");
+        }
+
+        if(entity.isDisabled()){
+            throw new AlreadyDisabledException("Utente già disabilitato");
         }
         entity.setState(UserState.DISABILITATO);
         return userRepository.save(entity);
