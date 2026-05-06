@@ -108,4 +108,11 @@ public class CustomExceptionHandler  {
 				.body(ResponseJSON.error(HttpStatus.CONFLICT.value(), ex.getMessage()));
 	}
 
+	@ExceptionHandler(ConflictException.class)
+	public ResponseEntity<ResponseJSON<Void>> handleConflictException(ConflictException ex, WebRequest request) {
+		return ResponseEntity
+				.status(HttpStatus.CONFLICT)
+				.body(ResponseJSON.error(HttpStatus.CONFLICT.value(), ex.getMessage()));
+	}
+
 }
