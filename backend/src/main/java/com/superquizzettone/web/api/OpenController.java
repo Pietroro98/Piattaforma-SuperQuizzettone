@@ -1,6 +1,6 @@
 package com.superquizzettone.web.api;
 
-import com.superquizzettone.dto.QuestionDTO;
+import com.superquizzettone.dto.QuestionResponseDTO;
 import com.superquizzettone.dto.ResponseJSON;
 import com.superquizzettone.model.Question;
 import com.superquizzettone.service.question.QuestionService;
@@ -22,10 +22,10 @@ public class OpenController {
     }
 
     @GetMapping("/all-questions")
-    public ResponseEntity<ResponseJSON<List<QuestionDTO>>> getAllQuestions() {
-        List<QuestionDTO> responseData = questionService.listAll()
+    public ResponseEntity<ResponseJSON<List<QuestionResponseDTO>>> getAllQuestions() {
+        List<QuestionResponseDTO> responseData = questionService.listAll()
                 .stream()
-                .map(QuestionDTO::buildQuestionDTOFromModel)
+                .map(QuestionResponseDTO::fromModel)
                 .toList();
 
         return ResponseEntity.ok(
@@ -34,13 +34,13 @@ public class OpenController {
     }
 
     @GetMapping("/get-my-questions")
-    public ResponseEntity<ResponseJSON<List<QuestionDTO>>> getMyQuestions() {
+    public ResponseEntity<ResponseJSON<List<QuestionResponseDTO>>> getMyQuestions() {
 
         List<Question> quest = questionService.getMyQuestions();
 
-         List<QuestionDTO> reponseData = quest
+         List<QuestionResponseDTO> reponseData = quest
                 .stream()
-                .map(QuestionDTO::buildQuestionDTOFromModel)
+                .map(QuestionResponseDTO::fromModel)
                 .toList();
         return ResponseEntity.ok(
                 ResponseJSON.success(200, "Domande recuperate con successo.", reponseData)

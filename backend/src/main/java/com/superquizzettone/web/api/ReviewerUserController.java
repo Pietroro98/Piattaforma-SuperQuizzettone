@@ -2,10 +2,12 @@ package com.superquizzettone.web.api;
 
 import com.superquizzettone.dto.MotivationDTO;
 import com.superquizzettone.dto.QuestionDTO;
+import com.superquizzettone.dto.QuestionResponseDTO;
 import com.superquizzettone.dto.ResponseJSON;
+import com.superquizzettone.dto.ReviewQuestionRequestDTO;
 import com.superquizzettone.model.Question;
 import com.superquizzettone.service.question.QuestionService;
-import com.superquizzettone.service.utente.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,24 +24,15 @@ public class ReviewerUserController {
         this.questionService = questionService;
     }
 
-    @GetMapping("/list-questions")
-    public ResponseEntity<ResponseJSON<List<QuestionDTO>>> questionList(){
-
-        List<QuestionDTO> responseData = questionService.listAll()
-                .stream()
-                .map(QuestionDTO::buildQuestionDTOFromModel)
-                .toList();
-
-        return ResponseEntity.ok(
-                ResponseJSON.success(200, "Lista di questions caricata correttamente", responseData)
-        );
-    }
-
+    @Deprecated
     @PutMapping("/reject-question")
-    public ResponseEntity<ResponseJSON<QuestionDTO>> rejectQuestion(@RequestBody MotivationDTO motivationDTO){
+    public ResponseEntity<ResponseJSON<QuestionResponseDTO>> rejectQuestion(@RequestBody MotivationDTO motivationDTO){
+        ReviewQuestionRequestDTO requestDTO = new ReviewQuestionRequestDTO();
+        requestDTO.setStatus(motivationDTO.getStatus());
+        requestDTO.setMotivationRejection(motivationDTO.getMotivationRejection());
 
-        Question question = questionService.rejectQuestion(motivationDTO);
-        QuestionDTO responseData = QuestionDTO.buildQuestionDTOFromModel(question);
+        Question question = questionService.reviewQuestion(motivationDTO.getQuestion_id(), requestDTO);
+        QuestionResponseDTO responseData = QuestionResponseDTO.fromModel(question);
 
         return ResponseEntity.ok(
                 ResponseJSON.success(200, "Question rigettata con successo", responseData)
@@ -47,10 +40,10 @@ public class ReviewerUserController {
     }
 
     @GetMapping("/questions/in-review")
-    public ResponseEntity<ResponseJSON<List<QuestionDTO>>> getQuestionsInReview() {
-        List<QuestionDTO> responseData = questionService.getQuestionsAvailableForReview()
+    public ResponseEntity<ResponseJSON<List<QuestionResponseDTO>>> getQuestionsInReview() {
+        List<QuestionResponseDTO> responseData = questionService.getQuestionsAvailableForReview()
                 .stream()
-                .map(QuestionDTO::buildQuestionDTOFromModel)
+                .map(QuestionResponseDTO::fromModel)
                 .toList();
 
         return ResponseEntity.ok(
@@ -59,7 +52,7 @@ public class ReviewerUserController {
     }
 
     @GetMapping("/questions/{id}")
-    public ResponseEntity<ResponseJSON<QuestionDTO>> getQuestionDetails(@PathVariable Long id) {
+    public ResponseEntity<ResponseJSON<QuestionResponseDTO>> getQuestionDetails(@PathVariable Long id) {
         Question question = questionService.getSingleElement(id);
 
         if (question == null) {
@@ -69,26 +62,38 @@ public class ReviewerUserController {
         }
 
         return ResponseEntity.ok(
-                ResponseJSON.success(200, "Domanda caricata correttamente", QuestionDTO.buildQuestionDTOFromModel(question))
+                ResponseJSON.success(200, "Domanda caricata correttamente", QuestionResponseDTO.fromModel(question))
         );
     }
 
     @PostMapping("/questions/{id}/claim")
-    public ResponseEntity<ResponseJSON<QuestionDTO>> claimQuestion(@PathVariable Long id) {
+    public ResponseEntity<ResponseJSON<QuestionResponseDTO>> claimQuestion(@PathVariable Long id) {
         Question question = questionService.claimForReview(id);
-        QuestionDTO responseData = QuestionDTO.buildQuestionDTOFromModel(question);
+        QuestionResponseDTO responseData = QuestionResponseDTO.fromModel(question);
 
         return ResponseEntity.ok(
                 ResponseJSON.success(200, "Question presa in carico correttamente", responseData)
         );
     }
 
-    @GetMapping("/questions/my-claimed")
-    public ResponseEntity<ResponseJSON<List<QuestionDTO>>> myClaimedQuestions() {
+    @PutMapping("/questions/{id}/review")
+    public ResponseEntity<ResponseJSON<QuestionResponseDTO>> reviewQuestion(
+            @PathVariable Long id,
+            @RequestBody @Valid ReviewQuestionRequestDTO reviewQuestionRequestDTO) {
+        Question question = questionService.reviewQuestion(id, reviewQuestionRequestDTO);
+        QuestionResponseDTO responseData = QuestionResponseDTO.fromModel(question);
 
-        List<QuestionDTO> responseData = questionService.getMyClaimedQuestions()
+        return ResponseEntity.ok(
+                ResponseJSON.success(200, "Question revisionata correttamente", responseData)
+        );
+    }
+
+    @GetMapping("/questions/my-claimed")
+    public ResponseEntity<ResponseJSON<List<QuestionResponseDTO>>> myClaimedQuestions() {
+
+        List<QuestionResponseDTO> responseData = questionService.getMyClaimedQuestions()
                 .stream()
-                .map(QuestionDTO::buildQuestionDTOFromModel)
+                .map(QuestionResponseDTO::fromModel)
                 .toList();
 
         return ResponseEntity.ok(

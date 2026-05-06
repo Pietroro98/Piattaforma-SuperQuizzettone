@@ -2,6 +2,7 @@ package com.superquizzettone.repository.question;
 
 import com.superquizzettone.model.Question;
 import com.superquizzettone.model.QuestionStatus;
+import com.superquizzettone.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,12 +18,12 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Modifying
     @Query("""
     update Question q
-    set q.status = :newStatus, q.reviewedBy.id = :reviewerId
+    set q.status = :newStatus, q.reviewedBy = :reviewer
     where q.id = :questionId and q.status = :currentStatus
     """)
     int claimQuestion(
             @Param("questionId") Long questionId,
-            @Param("reviewerId") Long reviewerId,
+            @Param("reviewer") User reviewer,
             @Param("currentStatus") QuestionStatus currentStatus,
             @Param("newStatus") QuestionStatus newStatus
     );
@@ -39,6 +40,5 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             @Param("reviewerId") Long reviewerId
     );
 
-    // LSTA PUBBLICA REVIEWER
     List<Question> findByStatus( QuestionStatus status);
 }
