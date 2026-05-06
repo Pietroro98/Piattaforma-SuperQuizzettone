@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,9 +37,15 @@ public class PlayerController {
                 .body(ResponseJSON.success(200, "Lista pervenuta con successo", response));
     }
 
+    @GetMapping("quiz/{id}")
+    public ResponseEntity<ResponseJSON<QuizDTO>> getQuizById(@PathVariable Long id){
+        QuizDTO response = QuizDTO.buildDTOFromModel(quizService.getQuizById(id));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseJSON.success(200, "Quiz pervenuto con successo", response));
+    }
+
     /*
-        listQuiz()
-        endpoint: GET ../player/quiz-list
+
         createTrainingQuiz(Body quizDTO):
         endpoint: POST../player/create-training-quiz
         getQuiz(id Long):
