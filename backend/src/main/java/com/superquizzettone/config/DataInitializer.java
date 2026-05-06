@@ -40,6 +40,7 @@ public class DataInitializer {
             createUser(userRepository, passwordEncoder, "Administrator", "System", "Administrator1", "Administrator_123", administratorRole);
             createUser(userRepository, passwordEncoder, "Writer", "System", "Writer1", "Writer_123", writerRole);
             createUser(userRepository, passwordEncoder, "Reviewer", "System", "Reviewer1", "Reviewer_123", reviewerRole);
+            createUser(userRepository, passwordEncoder, "Reviewer2", "System2", "Reviewer2", "Reviewer_123", reviewerRole);
 
             User admin = userRepository.findByUsername("Administrator1").orElseThrow();
             // =========================

@@ -1,8 +1,10 @@
 package com.superquizzettone.web.api;
 
+import com.superquizzettone.dto.CategoryDTO;
 import com.superquizzettone.dto.QuestionResponseDTO;
 import com.superquizzettone.dto.ResponseJSON;
 import com.superquizzettone.model.Question;
+import com.superquizzettone.service.category.CategoryService;
 import com.superquizzettone.service.question.QuestionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +18,11 @@ import java.util.List;
 public class OpenController {
 
     private final QuestionService questionService;
+    private final CategoryService categoryService;
 
-    public OpenController(QuestionService questionService) {
+    public OpenController(QuestionService questionService, CategoryService categoryService) {
         this.questionService = questionService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/all-questions")
@@ -44,6 +48,18 @@ public class OpenController {
                 .toList();
         return ResponseEntity.ok(
                 ResponseJSON.success(200, "Domande recuperate con successo.", reponseData)
+        );
+    }
+
+    @GetMapping("/categories-list")
+    public ResponseEntity<ResponseJSON<List<CategoryDTO>>> getAllCategories() {
+        List<CategoryDTO> responseData = categoryService.listAll()
+                .stream()
+                .map(CategoryDTO::buildDTOFromModel)
+                .toList();
+
+        return ResponseEntity.ok(
+                ResponseJSON.success(200, "Lista categorie recuperate con successo.", responseData)
         );
     }
 }

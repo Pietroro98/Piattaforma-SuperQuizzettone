@@ -24,21 +24,6 @@ public class ReviewerUserController {
         this.questionService = questionService;
     }
 
-    @Deprecated
-    @PutMapping("/reject-question")
-    public ResponseEntity<ResponseJSON<QuestionResponseDTO>> rejectQuestion(@RequestBody MotivationDTO motivationDTO){
-        ReviewQuestionRequestDTO requestDTO = new ReviewQuestionRequestDTO();
-        requestDTO.setStatus(motivationDTO.getStatus());
-        requestDTO.setMotivationRejection(motivationDTO.getMotivationRejection());
-
-        Question question = questionService.reviewQuestion(motivationDTO.getQuestion_id(), requestDTO);
-        QuestionResponseDTO responseData = QuestionResponseDTO.fromModel(question);
-
-        return ResponseEntity.ok(
-                ResponseJSON.success(200, "Question rigettata con successo", responseData)
-        );
-    }
-
     @GetMapping("/questions/in-review")
     public ResponseEntity<ResponseJSON<List<QuestionResponseDTO>>> getQuestionsInReview() {
         List<QuestionResponseDTO> responseData = questionService.getQuestionsAvailableForReview()
@@ -77,9 +62,7 @@ public class ReviewerUserController {
     }
 
     @PutMapping("/questions/{id}/review")
-    public ResponseEntity<ResponseJSON<QuestionResponseDTO>> reviewQuestion(
-            @PathVariable Long id,
-            @RequestBody @Valid ReviewQuestionRequestDTO reviewQuestionRequestDTO) {
+    public ResponseEntity<ResponseJSON<QuestionResponseDTO>> reviewQuestion(@PathVariable Long id, @RequestBody @Valid ReviewQuestionRequestDTO reviewQuestionRequestDTO) {
         Question question = questionService.reviewQuestion(id, reviewQuestionRequestDTO);
         QuestionResponseDTO responseData = QuestionResponseDTO.fromModel(question);
 

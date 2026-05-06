@@ -251,7 +251,7 @@ public class QuestionServiceImpl implements QuestionService {
             if(question.getReviewedBy() != null && question.getReviewedBy().getId().equals(userLoggato.getId())){
                 return question;
             }
-            throw new NotAllowedException("La question è già presa in carico da un altro reviewer");
+            throw new NotAllowedException("La question è già stata presa in carico da un altro reviewer");
         }
 
         int updated = questionRepository.claimQuestion(
