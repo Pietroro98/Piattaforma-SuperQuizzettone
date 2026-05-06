@@ -235,6 +235,7 @@ public class DataInitializer {
                 .orElseGet(() -> {
                     Category c = new Category();
                     c.setName(name);
+                    c.setQuestionStatus(QuestionStatus.ACCEPTED);
                     return categoryRepository.save(c);
                 });
     }
