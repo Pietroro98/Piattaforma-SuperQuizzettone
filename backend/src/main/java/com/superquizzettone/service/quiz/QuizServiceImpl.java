@@ -3,6 +3,7 @@ package com.superquizzettone.service.quiz;
 import com.superquizzettone.dto.QuizDTO;
 import com.superquizzettone.model.Quiz;
 import com.superquizzettone.repository.quiz.QuizRepository;
+import com.superquizzettone.web.api.exception.BadRequestException;
 import com.superquizzettone.web.api.exception.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,6 +30,9 @@ public class QuizServiceImpl implements QuizService{
 
     @Override
     public Quiz getQuizById(Long quizId) {
+        if(quizId == null) {
+            throw new BadRequestException("Attenzione, l'id non può essere nullo");
+        }
         return quizRepository.findById(quizId).orElseThrow(() ->new NotFoundException("Quiz non trovato con id: " + quizId ));
     }
 

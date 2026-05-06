@@ -47,6 +47,7 @@ SecurityConfig {
             .authorizeHttpRequests(auth -> auth
              .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
                 .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/check-username").permitAll()
+                .requestMatchers("/api/player/**").hasAnyRole("PLAYER", "ADMINISTRATOR")
                 .requestMatchers("/api/utente/userInfo", "/api/utente/changePassword", "/api/open-controller/**").authenticated()
                 .requestMatchers("/api/reviewer/**").hasAnyRole("REVIEWER", "ADMINISTRATOR")
                 .requestMatchers("/api/writer/**").hasAnyRole("WRITER", "ADMINISTRATOR")
