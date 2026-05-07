@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, map, switchMap, tap } from 'rxjs';
 import { StorageService } from './storage.service';
 import { AuthResponse, User } from '../models/user.model';
 
@@ -21,25 +21,33 @@ export class AuthService {
 
   private readonly http = inject(HttpClient);
   private readonly storage = inject(StorageService);
-  baseUrl: string = 'http://192.168.5.73:8080/superQuizzettone/api';
+  baseUrl: string = 'http://192.168.5.76:8080/superQuizzettone/api';
 
   private readonly currentUserSubject = new BehaviorSubject<Omit<User, 'password'> | null>(
     this.storage.get<Omit<User, 'password'>>('auth_user')
   );
 
+  private readonly initialsSubject = new BehaviorSubject<string | null>(
+  this.storage.get<string>('initials')
+  );
+
+  readonly initials$ = this.initialsSubject.asObservable();
+
   readonly currentUser$ = this.currentUserSubject.asObservable();
 
-  login(payload: LoginPayload): Observable<any> {
+  login(payload: LoginPayload): Observable<AuthResponse> {
     return this.http.post<any>(`${this.baseUrl}/auth/login`, payload).pipe(
       tap(response => {
-        console.log(response)
-        console.log(response.data)
-          this.storage.set('token', response.data.token),
-          this.storage.set('username', response.data.username),
-          //this.storage.set('roles', response.data.roles),
-          this.currentUserSubject.next(null)
-      }
-      )
+        this.storage.set('token', response.data.token);
+        this.storage.set('username', response.data.username);
+      }),
+      switchMap(() => this.getCurrentUserNameAndLastName()),
+        tap((userInfo: AuthResponse) => {
+          const user = userInfo.data;
+          const initials = (user.nome.charAt(0) + user.cognome.charAt(0)).toUpperCase();
+          this.storage.set('initials', initials);
+          this.initialsSubject.next(initials);
+        })
     );
   }
 
@@ -51,7 +59,8 @@ export class AuthService {
     this.storage.remove('token');
     this.storage.remove('username');
     this.storage.remove('roles');
-    this.currentUserSubject.next(null);
+    this.storage.remove('initials');  
+    this.initialsSubject.next(null);
   }
 
   token(): string | null {
@@ -86,7 +95,7 @@ export class AuthService {
     return this.storage.get<string>('username');
   }
 
-  getCurrentUserNameAndLastName() {
+  getCurrentUserNameAndLastName(): Observable<AuthResponse> {
     return this.http.get<AuthResponse>(`${this.baseUrl}/utente/userInfo`);
   }
 

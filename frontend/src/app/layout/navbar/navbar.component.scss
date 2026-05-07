@@ -9,4 +9,18 @@
   justify-content: center;
   font-weight: bold;
   text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #303f9f;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
