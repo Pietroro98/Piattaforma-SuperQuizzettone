@@ -94,5 +94,25 @@ public class CustomExceptionHandler  {
 				.status(HttpStatus.BAD_REQUEST)
 				.body(ResponseJSON.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
 	}
+	@ExceptionHandler(AlreadyDisabledException.class)
+	public ResponseEntity<ResponseJSON<Void>> handleAlreadyDisabledException(AlreadyDisabledException ex, WebRequest request) {
+		return ResponseEntity
+				.status(HttpStatus.CONFLICT)
+				.body(ResponseJSON.error(HttpStatus.CONFLICT.value(), ex.getMessage()));
+	}
+
+	@ExceptionHandler(AlreadyEnabledException.class)
+	public ResponseEntity<ResponseJSON<Void>> handleAlreadyEnabledException(AlreadyEnabledException ex, WebRequest request) {
+		return ResponseEntity
+				.status(HttpStatus.CONFLICT)
+				.body(ResponseJSON.error(HttpStatus.CONFLICT.value(), ex.getMessage()));
+	}
+
+	@ExceptionHandler(ConflictException.class)
+	public ResponseEntity<ResponseJSON<Void>> handleConflictException(ConflictException ex, WebRequest request) {
+		return ResponseEntity
+				.status(HttpStatus.CONFLICT)
+				.body(ResponseJSON.error(HttpStatus.CONFLICT.value(), ex.getMessage()));
+	}
 
 }

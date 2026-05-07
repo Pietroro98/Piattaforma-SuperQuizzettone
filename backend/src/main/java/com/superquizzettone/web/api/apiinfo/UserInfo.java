@@ -36,7 +36,7 @@ public class UserInfo {
 
         UtenteInfoJWTResponseDTO responseData = new UtenteInfoJWTResponseDTO(
                 userLoggato.getName(),
-                userLoggato.getUsername(),
+                userLoggato.getSurname(),
                 userLoggato.getUsername(),
                 userLoggato.getState(),
                 ruoli,

@@ -26,7 +26,7 @@ public class Question {
     private List<Answer> answers = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "category_id",  nullable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne
@@ -57,4 +57,7 @@ public class Question {
 
     @Column(name = "approvalDate")
     private LocalDateTime approvalDate;
+
+    @ManyToMany(mappedBy = "questions")
+    private List<Quiz> quizzes = new ArrayList<>();
 }

@@ -29,4 +29,7 @@ public interface QuizRepository extends QuizRepositoryCustom, JpaRepository<Quiz
 
     Page<Quiz> findAll(Pageable pageable);
 
+    Boolean existsByName(String name);
+
+    Optional<Quiz> findByName(String name);
 }

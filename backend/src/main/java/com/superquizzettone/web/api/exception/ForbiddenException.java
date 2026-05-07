@@ -5,7 +5,7 @@ public class ForbiddenException extends AccessDeniedException {
 
     private static final long serialVersionUID = 1L;
 
-    public ForbiddenException(String username) {
-        super("Insufficient authorities for user '" + username + "' to access this resource");
+    public ForbiddenException(String message) {
+        super(message);
     }
 }

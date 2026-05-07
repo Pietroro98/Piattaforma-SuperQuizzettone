@@ -104,14 +104,14 @@ public class AdministratorUserController {
     }
 
     @PatchMapping("/assign-role/{id}")
-    public ResponseEntity<ResponseJSON<UserUpdateDTO>> assignRole(@PathVariable Long id, RoleDTO roleDTO) {
+    public ResponseEntity<ResponseJSON<UserUpdateDTO>> assignRole(@PathVariable Long id, @RequestBody Long roleId) {
         User utenteEsistente = userService.caricaSingoloUtente(id);
         if (utenteEsistente == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ResponseJSON.error(404, "L'utente con id: "+ id + " non esiste"));
         }
 
-        userService.assegnaRuolo(utenteEsistente, id, RoleDTO.createModelFromDTO(roleDTO));
+        userService.assegnaRuolo(utenteEsistente, id, roleId);
         UserUpdateDTO responseData = UserUpdateDTO.buildDTOFromModel(utenteEsistente);
         return ResponseEntity.ok(
                 ResponseJSON.success(200,
@@ -122,23 +122,33 @@ public class AdministratorUserController {
         );
     }
 
+    @PatchMapping("/revoke-role/{id}")
+    public ResponseEntity<ResponseJSON<UserUpdateDTO>> revokeRole(@PathVariable Long id, @RequestBody Long roleId){
+        UserUpdateDTO dto = userService.revocaRuolo(id, roleId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseJSON.success(200, "ruolo cambiato con successo", dto));
+    }
+
+    @PutMapping("/disableUser/{id}")
+    public ResponseEntity<ResponseJSON<UserStatusDTO>> disableUser(@PathVariable Long id){
+
+        User user = userService.disabilita(id);
+        UserStatusDTO response = UserStatusDTO.buildDTOFromModel(user);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseJSON.success(200, "Utente disabilitato con successo", response));
+
+    }
+
     private Optional<UsernameCheckResponseDTO> getSuggerimenti (String username) {
         return securityUtils.checkUsername(username);
     }
 
-    /*
-    @PatchMapping("/revoke-role/{id}")
-    public ResponseEntity<ResponseJSON<UserUpdateDTO>> revokeRole(@PathVariable Long id, RoleDTO roleDTO){
-
+    @PutMapping ("/enableUser/{id}")
+    public ResponseEntity<ResponseJSON<UserStatusDTO>> enableUser(@PathVariable Long id){
+        User user = userService.abilita(id);
+        UserStatusDTO response = UserStatusDTO.buildDTOFromModel(user);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseJSON.success(200, "utente riabilitato con successo", response));
     }
-
-     */
-/*
-
-    revokeRole(Body Role)
-    endpoint: PATCH ../admin/revoke-role/{id}
-    disableUser(id Long):
-    endpoint: PUT/(PATCH) ../admin/disable/{id}
-*/
 
 }
