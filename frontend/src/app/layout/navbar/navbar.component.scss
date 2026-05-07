@@ -23,4 +23,14 @@
   &:active {
     transform: scale(0.95);
   }
+
+  .dropdown-menu{
+    
+  }
+
+  .dropdown {
+    justify-content: start;
+    align-items: start;
+  }
+
 }
