@@ -1,16 +1,15 @@
 package com.superquizzettone.web.api;
-import com.superquizzettone.dto.QuestionDTO;
+import com.superquizzettone.dto.CreateQuestionRequestDTO;
+import com.superquizzettone.dto.QuestionResponseDTO;
 import com.superquizzettone.dto.ResponseJSON;
+import com.superquizzettone.dto.UpdateQuestionRequestDTO;
 import com.superquizzettone.model.Question;
 import com.superquizzettone.service.question.QuestionService;
 import com.superquizzettone.service.quiz.QuizService;
-import com.superquizzettone.web.api.exception.IdNotNullForInsertException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/writer")
@@ -25,12 +24,9 @@ public class WriterController {
     }
 
     @PostMapping("/create-question")
-    public ResponseEntity<ResponseJSON<QuestionDTO>> createQuestion(@RequestBody @Valid QuestionDTO questionInput) {
-        if (questionInput.getId() != null) {
-            throw new IdNotNullForInsertException("Non è ammesso fornire un id per la creazione");
-        }
-        Question question = questionService.insertNew(questionInput.buildQuestionModel(true));
-        QuestionDTO responseData = QuestionDTO.buildQuestionDTOFromModel(question);
+    public ResponseEntity<ResponseJSON<QuestionResponseDTO>> createQuestion(@RequestBody @Valid CreateQuestionRequestDTO questionInput) {
+        Question question = questionService.insertNew(questionInput.toModel());
+        QuestionResponseDTO responseData = QuestionResponseDTO.fromModel(question);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -38,7 +34,7 @@ public class WriterController {
     }
 
     @PutMapping("/modify/{id}")
-    public ResponseEntity<ResponseJSON<QuestionDTO>> modifyQuestion(@PathVariable Long id, @RequestBody @Valid QuestionDTO questionInput) {
+    public ResponseEntity<ResponseJSON<QuestionResponseDTO>> modifyQuestion(@PathVariable Long id, @RequestBody @Valid UpdateQuestionRequestDTO questionInput) {
         Question questionEsistente = questionService.getSingleElement(id);
 
         if (questionEsistente == null) {
@@ -47,9 +43,10 @@ public class WriterController {
                     .body(ResponseJSON.error(404, "Domanda non trovata per id: " + id));
         }
 
-        questionInput.setId(id);
-        Question questionAggiornata = questionService.update(questionInput.buildQuestionModel(true));
-        QuestionDTO responseData = QuestionDTO.buildQuestionDTOFromModel(questionAggiornata);
+        Question questionToUpdate = questionInput.toModel();
+        questionToUpdate.setId(id);
+        Question questionAggiornata = questionService.update(questionToUpdate);
+        QuestionResponseDTO responseData = QuestionResponseDTO.fromModel(questionAggiornata);
 
         return ResponseEntity.ok(
                 ResponseJSON.success(200, "Domanda aggiornata con successo.", responseData)
@@ -57,7 +54,7 @@ public class WriterController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseJSON<QuestionDTO>> deleteQuestion(@PathVariable Long id) {
+    public ResponseEntity<ResponseJSON<QuestionResponseDTO>> deleteQuestion(@PathVariable Long id) {
         Question questionEsistente = questionService.getSingleElement(id);
         if (questionEsistente == null) {
             return ResponseEntity
@@ -65,7 +62,7 @@ public class WriterController {
                     .body(ResponseJSON.error(404, "Domanda non trovata per id: " + id));
         }
 
-        QuestionDTO responseData = QuestionDTO.buildQuestionDTOFromModel(questionEsistente);
+        QuestionResponseDTO responseData = QuestionResponseDTO.fromModel(questionEsistente);
         questionService.remove(id);
 
         return ResponseEntity.ok(
