@@ -1,6 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { QuestionService } from '../../core/service/question.service';
+import { Router } from '@angular/router';
+import { Category } from '../../core/models/quiz.model';
+import { Answer } from '../../core/models/question.model';
 
 @Component({
   selector: 'app-question-creator',
@@ -8,9 +11,11 @@ import { QuestionService } from '../../core/service/question.service';
   templateUrl: './question-creator.component.html',
   styleUrl: './question-creator.component.scss'
 })
-export class QuestionCreatorComponent {
+export class QuestionCreatorComponent implements OnInit {
 
   form: FormGroup;
+  categories!: Category[];
+  private readonly route = inject(Router);
   private readonly questionService = inject(QuestionService);
 
   constructor(private fb: FormBuilder) {
@@ -18,7 +23,8 @@ export class QuestionCreatorComponent {
       description: ['', Validators.required],
       type: ['SINGOLA'],
       categoryMode: ['select'],
-      category: [''],
+      category: [null],
+      categoryInput: [''],
       tag: [''],
       answers: this.fb.array([])
     },
@@ -26,11 +32,36 @@ export class QuestionCreatorComponent {
         validators: [this.validateCorrectAnswersCount]
       }
     );
-    this.initAnswers();
+    this.initDefaultAnswers();
 
-    this.form.get('type')?.valueChanges.subscribe(() => {
-      this.resetCorrectAnswers();
+    this.form.get('type')?.valueChanges.subscribe(type => {
+      if (type === 'VEROFALSO') {
+        this.initTrueFalseAnswers();
+      } else {
+        this.initDefaultAnswers();
+      }
+
+      this.form.updateValueAndValidity();
     });
+
+    this.form.get('categoryMode')?.valueChanges.subscribe(() => {
+      this.form.get('category')?.reset();
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadCategories();
+  }
+
+  loadCategories(): void {
+    this.questionService.getAllCategory().subscribe({
+      next: (categories: Category[]) => {
+        this.categories = categories;
+      },
+      error: (err) => {
+        console.error("Errore nel caricamento delle categorie", err);
+      }
+    })
   }
 
   get answers(): FormArray {
@@ -41,6 +72,22 @@ export class QuestionCreatorComponent {
     return this.form.get('categoryMode')?.value;
   }
 
+  get questionType(): string {
+    return this.form.get('type')?.value;
+  }
+
+  get isSingle(): boolean {
+    return this.questionType === 'SINGOLA';
+  }
+
+  get isMultiple(): boolean {
+    return this.questionType === 'MULTIPLA';
+  }
+
+  get isTrueFalse(): boolean {
+    return this.questionType === 'VEROFALSO';
+  }
+
   validateCorrectAnswersCount = (control: AbstractControl): ValidationErrors | null => {
     const form = control as FormGroup;
     const type = form.get('type')?.value;
@@ -49,7 +96,7 @@ export class QuestionCreatorComponent {
       return null;
     }
     const correctAnswersCount = answers.controls.filter(answer => {
-      return answer.get('isCorrect')?.value === true;
+      return answer.get('correct')?.value === true;
     }).length;
     const answersCount = answers.controls.length;
     const isValid =
@@ -68,17 +115,36 @@ export class QuestionCreatorComponent {
     };
   };
 
-  initAnswers() {
+  initDefaultAnswers(): void {
+    this.answers.clear();
     ['A', 'B', 'C', 'D'].forEach(label => {
       this.answers.push(this.createAnswer(label));
     });
   }
 
+  initTrueFalseAnswers(): void {
+    this.answers.clear();
+    this.answers.push(
+      this.fb.group({
+        label: ['A'],
+        description: ['Vero', Validators.required],
+        correct: [false]
+      })
+    );
+    this.answers.push(
+      this.fb.group({
+        label: ['B'],
+        description: ['Falso', Validators.required],
+        correct: [false]
+      })
+    );
+  }
+
   createAnswer(label: string): FormGroup {
     return this.fb.group({
       label: [label],
-      inputAnswer: ['', Validators.required],
-      isCorrect: [false]
+      description: ['', Validators.required],
+      correct: [false]
     });
   }
 
@@ -95,7 +161,7 @@ export class QuestionCreatorComponent {
 
   setCorrect(index: number) {
     this.answers.controls.forEach((ctrl, i) => {
-      ctrl.get('isCorrect')?.setValue(i === index);
+      ctrl.get('correct')?.setValue(i === index);
     });
     this.form.updateValueAndValidity();
   }
@@ -103,20 +169,58 @@ export class QuestionCreatorComponent {
   //emitEvent: false -> serve per evitare di scatenare eventi inutili per ogni singola risposta
   resetCorrectAnswers(): void {
     this.answers.controls.forEach(answer => {
-      answer.get('isCorrect')?.setValue(false, { emitEvent: false });
+      answer.get('correct')?.setValue(false, { emitEvent: false });
     });
     this.form.updateValueAndValidity();
   }
 
-  submit() {
+
+  submit(action: 'BOZZA' | 'CONFERMA'): void {
     this.form.updateValueAndValidity();
-    if (this.form.invalid) {
+    if (action === 'CONFERMA' && this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    //console.log(this.form.value);
-    const { categoryMode, ...payload } = this.form.getRawValue();
-    this.questionService.createQuestion(payload).subscribe();
+    const {
+      categoryMode,
+      categoryInput,
+      ...rawPayload
+    } = this.form.getRawValue();
+    const category =
+      categoryMode === 'select'
+        ? rawPayload.category
+        : { name: categoryInput };
+    const payload = {
+      ...rawPayload,
+      category,
+      ...(action === 'BOZZA' && {
+        status: 'DRAFT'
+      }),
+      answers: rawPayload.answers.map((answer: any) => {
+        const { label, ...cleanedAnswer } = answer;
+        return cleanedAnswer;
+      })
+    };
+    if (action === 'CONFERMA') {
+      this.questionService.createQuestion(payload).subscribe({
+        next: data => {
+          console.log('Domanda creata', data);
+        },
+        error: err => {
+          console.log('errore', err);
+        }
+      });
+    }
+    if (action === 'BOZZA') {
+      this.questionService.saveDraft(payload).subscribe({
+        next: data => {
+          console.log('Domanda creata', data);
+        },
+        error: err => {
+          console.log('errore', err);
+        }
+      });
+    }
   }
 
 }

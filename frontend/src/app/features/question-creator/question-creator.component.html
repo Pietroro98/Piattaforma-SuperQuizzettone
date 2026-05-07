@@ -22,35 +22,38 @@
         </section>
 
         <!-- RISPOSTE -->
-        @if (form.get('type')?.value === 'SINGOLA' || form.get('type')?.value === 'MULTIPLA' ) {
         <div class="d-flex flex-column gap-2 mb-3" formArrayName="answers">
-
             @for (answer of answers.controls; track answer; let i = $index) {
-            <div [formGroupName]="i" class="answer-row" [class.correct]="answer.get('isCorrect')?.value"
-                [class.uncorrect]="!answer.get('isCorrect')?.value">
+            <div [formGroupName]="i" class="answer-row" [class.correct]="answer.get('correct')?.value"
+                [class.uncorrect]="!answer.get('correct')?.value">
 
                 <strong>{{answer.value.label}}</strong>
 
-                <input class="input-custom flex-grow-1" formControlName="inputAnswer"
+                @if (isTrueFalse) {
+                <input class="input-custom flex-grow-1" formControlName="description" readonly />
+                }
+                @else {
+                <input class="input-custom flex-grow-1" formControlName="description"
                     placeholder="Scrivi risposta..." />
+                }
 
-                @if (i > 3) {
+                @if (!isTrueFalse && i > 3) {
                 <span class="text-danger pointer" (click)="removeAnswer(i)">✖</span>
                 }
 
-                @if (form.get('type')?.value === 'SINGOLA') {
-                <input type="radio" [checked]="answer.get('isCorrect')?.value" (change)="setCorrect(i)"/>
+                @if (isSingle || isTrueFalse) {
+                <input type="radio" [checked]="answer.get('correct')?.value" (change)="setCorrect(i)" />
                 }
 
-                @if (form.get('type')?.value === 'MULTIPLA') {
-                <input type="checkbox" formControlName="isCorrect" (change)="form.updateValueAndValidity()" />
+                @if (isMultiple) {
+                <input type="checkbox" formControlName="correct" (change)="form.updateValueAndValidity()" />
                 }
             </div>
             }
-
         </div>
 
         <!-- ADD -->
+        @if (isSingle || isMultiple) {
         <button class="border add-answer mb-5 d-block" (click)="addAnswer()">
             + Aggiungi risposta
         </button>
@@ -72,12 +75,17 @@
                 <label><strong>Categoria:</strong></label>
                 @if (categoryMode === 'select') {
                 <select class="form-select" formControlName="category">
-                    <option selected value="SINGOLA">Categoria 1</option>
-                    <option value="MULTIPLA">Categoria 2</option>
+                    <option [ngValue]="null">Seleziona una categoria</option>
+
+                    @for (category of categories; track category.id) {
+                    <option [ngValue]="category">
+                        {{ category.name }}
+                    </option>
+                    }
                 </select>
                 }
                 @else {
-                <input class="input-custom w-100" formControlName="category" placeholder="Categoria" />
+                <input class="input-custom w-100" formControlName="categoryInput" placeholder="Categoria" />
                 }
             </div>
         </div>
@@ -89,10 +97,8 @@
 
         <!-- ACTIONS -->
         <div class="d-flex justify-content-end gap-2">
-            <button class="btn-secondary-custom">BOZZA</button>
-            <button class="btn-primary-custom" (click)="submit()">
-                CONFERMA
-            </button>
+            <button class="btn-secondary-custom" (click)="submit('BOZZA')">BOZZA</button>
+            <button class="btn-primary-custom" (click)="submit('CONFERMA')">CONFERMA</button>
         </div>
 
 
@@ -103,7 +109,7 @@
             @for (answer of answers.value; track answer.id) {
             <div>
                 {{answer.label}} - {{answer.text}}
-                @if (answer.isCorrect) {
+                @if (answer.correct) {
                 <span class="badge-success">Corretta</span>
                 }
             </div>

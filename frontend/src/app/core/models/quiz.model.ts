@@ -25,5 +25,5 @@ export interface QuizPlayed {
 export interface Category {
     id: number;
     name: string; //unique
-    description: string;
+    status?: string;
 }
