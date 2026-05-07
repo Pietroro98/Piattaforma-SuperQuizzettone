@@ -1,5 +1,6 @@
 package com.superquizzettone.service.question;
 import com.superquizzettone.dto.MotivationDTO;
+import com.superquizzettone.dto.QuestionExampleDTO;
 import com.superquizzettone.model.*;
 import com.superquizzettone.repository.answer.AnswerRepository;
 import com.superquizzettone.repository.category.CategoryRepository;
@@ -131,6 +132,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Transactional
+    @Override
     public void remove(Long id){
 
         if(id == null){
@@ -159,6 +161,17 @@ public class QuestionServiceImpl implements QuestionService {
         return questionRepository.findMyQuestionsByUserId(userLoggato.getId());
     }
 
+    @Override
+    @Transactional
+    public List<Question> findByExample(QuestionExampleDTO example) {
+        List<Question> result = questionRepository.findByExample(example);
+        if(result == null){
+            throw new NotFoundException("Risultato nullo");
+        }
+        return result;
+    }
+
+    /*
     public List<Question> findByExample(Question example){
 
         if (example == null){
@@ -218,7 +231,7 @@ public class QuestionServiceImpl implements QuestionService {
         return typedQuery.getResultList();
     }
 
-
+    */
     @Transactional
     public Question rejectQuestion(MotivationDTO motivationDTO) {
 

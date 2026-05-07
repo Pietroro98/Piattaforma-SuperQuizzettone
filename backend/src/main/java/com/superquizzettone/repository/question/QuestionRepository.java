@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface QuestionRepository extends JpaRepository<Question, Long> {
+public interface QuestionRepository extends QuestionRepositoryCustom, JpaRepository<Question, Long> {
     @Query("select q from Question q where q.createdBy.id = :userId")
     List<Question> findMyQuestionsByUserId(@Param("userId") Long userId);
 
