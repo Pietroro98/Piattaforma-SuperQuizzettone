@@ -33,6 +33,16 @@ public class WriterController {
                 .body(ResponseJSON.success(201, "Domanda creata con successo.", responseData));
     }
 
+    @PostMapping("/save-draft")
+    public ResponseEntity<ResponseJSON<QuestionResponseDTO>> saveQuestionToDraft(@RequestBody CreateQuestionRequestDTO questionInput) {
+        Question question = questionService.insertNew(questionInput.toModel());
+        QuestionResponseDTO responseData = QuestionResponseDTO.fromModel(question);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ResponseJSON.success(201, "Domanda creata con successo.", responseData));
+    }
+
     @PutMapping("/modify/{id}")
     public ResponseEntity<ResponseJSON<QuestionResponseDTO>> modifyQuestion(@PathVariable Long id, @RequestBody @Valid UpdateQuestionRequestDTO questionInput) {
         Question questionEsistente = questionService.getSingleElement(id);
