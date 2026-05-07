@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Configuration
@@ -26,44 +27,100 @@ public class DataInitializer {
                                QuestionRepository questionRepository,
                                AnswerRepository answerRepository,
                                PasswordEncoder passwordEncoder) {
+
         return args -> {
+
             // =====================================
             // ROLES
             // =====================================
-            Role administratorRole = createRole(roleRepository, "Amministratore", Role.ROLE_ADMINISTRATOR);
-            Role writerRole = createRole(roleRepository, "Writer", Role.ROLE_WRITER);
-            Role reviewerRole = createRole(roleRepository, "Reviewer", Role.ROLE_REVIEWER);
-            createRole(roleRepository, "Player", Role.ROLE_PLAYER);
+
+            Role administratorRole = createRole(
+                    roleRepository,
+                    "Amministratore",
+                    Role.ROLE_ADMINISTRATOR
+            );
+
+            Role writerRole = createRole(
+                    roleRepository,
+                    "Writer",
+                    Role.ROLE_WRITER
+            );
+
+            Role reviewerRole = createRole(
+                    roleRepository,
+                    "Reviewer",
+                    Role.ROLE_REVIEWER
+            );
+
+            createRole(
+                    roleRepository,
+                    "Player",
+                    Role.ROLE_PLAYER
+            );
+
             // =====================================
             // USERS
             // =====================================
-            createUser(userRepository, passwordEncoder, "Administrator", "System", "Administrator1", "Administrator_123", administratorRole);
-            createUser(userRepository, passwordEncoder, "Writer", "System", "Writer1", "Writer_123", writerRole);
-            createUser(userRepository, passwordEncoder, "Reviewer", "System", "Reviewer1", "Reviewer_123", reviewerRole);
 
-            User admin = userRepository.findByUsername("Administrator1").orElseThrow();
-            // =========================
+            createUser(
+                    userRepository,
+                    passwordEncoder,
+                    "Administrator",
+                    "System",
+                    "Administrator1",
+                    "Administrator_123",
+                    administratorRole
+            );
+
+            createUser(
+                    userRepository,
+                    passwordEncoder,
+                    "Writer",
+                    "System",
+                    "Writer1",
+                    "Writer_123",
+                    writerRole
+            );
+
+            createUser(
+                    userRepository,
+                    passwordEncoder,
+                    "Reviewer",
+                    "System",
+                    "Reviewer1",
+                    "Reviewer_123",
+                    reviewerRole
+            );
+
+            User admin = userRepository
+                    .findByUsername("Administrator1")
+                    .orElseThrow();
+
+            // =====================================
             // CATEGORIES
-            // =========================
+            // =====================================
+
             Category java = createCategory(categoryRepository, "Java");
             Category angular = createCategory(categoryRepository, "Angular");
             Category spring = createCategory(categoryRepository, "Spring");
             Category typescript = createCategory(categoryRepository, "Typescript");
 
-            // =========================
-            // QUIZ MOCK
-            // =========================
+            // =====================================
+            // QUIZ
+            // =====================================
 
-            createQuiz(quizRepository,
+            Quiz javaSpringQuiz = createQuiz(
+                    quizRepository,
                     "Java e Spring Boot",
-                    "Domande di java appplicato al suo framework più conosciuto",
+                    "Domande di Java applicato a Spring Boot",
                     "05:00",
                     10.0,
                     admin,
                     Set.of(java, spring)
             );
 
-            createQuiz(quizRepository,
+            Quiz javaQuiz = createQuiz(
+                    quizRepository,
                     "Java puro",
                     "Domande riguardanti Java SE",
                     "07:30",
@@ -72,149 +129,247 @@ public class DataInitializer {
                     Set.of(java)
             );
 
-            createQuiz(quizRepository,
+            Quiz typescriptQuiz = createQuiz(
+                    quizRepository,
                     "Typescript",
-                    "Domande su typescript",
+                    "Domande su Typescript",
                     "04:00",
                     8.0,
                     admin,
                     Set.of(typescript)
             );
 
-            createQuiz(quizRepository,
+            Quiz angularQuiz = createQuiz(
+                    quizRepository,
                     "Angular",
-                    "Domande sul framework di frontend Angular e sul suo linguaggio di programmazione",
+                    "Domande sul framework Angular",
                     "06:00",
                     12.0,
                     admin,
                     Set.of(angular, typescript)
             );
-            Quiz javaQuiz = quizRepository.findByName("Java puro").orElseThrow();
+
+            // =====================================
+            // QUESTIONS
+            // =====================================
 
             Question j1 = createQuestion(
                     questionRepository,
                     "Qual è la caratteristica principale della JVM?",
                     java,
-                    javaQuiz,
                     "jvm",
                     QuestionStatus.ACCEPTED,
                     QuestionType.SINGOLA,
                     admin
             );
 
-            createAnswer(answerRepository, j1, "Esegue il bytecode Java", true);
-            createAnswer(answerRepository, j1, "Compila il codice sorgente", false);
-            createAnswer(answerRepository, j1, "Gestisce database", false);
-            createAnswer(answerRepository, j1, "Scrive codice Java", false);
+            createAnswer(answerRepository, j1,
+                    "Esegue il bytecode Java", true);
 
+            createAnswer(answerRepository, j1,
+                    "Compila il codice sorgente", false);
+
+            createAnswer(answerRepository, j1,
+                    "Gestisce database", false);
+
+            createAnswer(answerRepository, j1,
+                    "Scrive codice Java", false);
+
+            // =====================================
 
             Question j2 = createQuestion(
                     questionRepository,
                     "Quale tra questi è un tipo primitivo in Java?",
                     java,
-                    javaQuiz,
                     "fondamenti",
                     QuestionStatus.ACCEPTED,
                     QuestionType.SINGOLA,
                     admin
             );
 
-            createAnswer(answerRepository, j2, "int", true);
-            createAnswer(answerRepository, j2, "String", false);
-            createAnswer(answerRepository, j2, "ArrayList", false);
-            createAnswer(answerRepository, j2, "Object", false);
+            createAnswer(answerRepository, j2,
+                    "int", true);
 
-            Quiz springQuiz = quizRepository.findByName("Java e Spring Boot").orElseThrow();
+            createAnswer(answerRepository, j2,
+                    "String", false);
+
+            createAnswer(answerRepository, j2,
+                    "ArrayList", false);
+
+            createAnswer(answerRepository, j2,
+                    "Object", false);
+
+            // =====================================
 
             Question s1 = createQuestion(
                     questionRepository,
                     "A cosa serve l'annotazione @Autowired in Spring?",
                     spring,
-                    springQuiz,
                     "dependency-injection",
                     QuestionStatus.ACCEPTED,
                     QuestionType.SINGOLA,
                     admin
             );
 
-            createAnswer(answerRepository, s1, "Inietta automaticamente le dipendenze", true);
-            createAnswer(answerRepository, s1, "Crea una classe", false);
-            createAnswer(answerRepository, s1, "Compila il progetto", false);
-            createAnswer(answerRepository, s1, "Gestisce HTTP request", false);
+            createAnswer(answerRepository, s1,
+                    "Inietta automaticamente le dipendenze", true);
 
+            createAnswer(answerRepository, s1,
+                    "Crea una classe", false);
+
+            createAnswer(answerRepository, s1,
+                    "Compila il progetto", false);
+
+            createAnswer(answerRepository, s1,
+                    "Gestisce HTTP request", false);
+
+            // =====================================
 
             Question s2 = createQuestion(
                     questionRepository,
                     "Cosa fa Spring Boot Starter?",
                     spring,
-                    springQuiz,
                     "starter",
                     QuestionStatus.ACCEPTED,
                     QuestionType.SINGOLA,
                     admin
             );
 
-            createAnswer(answerRepository, s2, "Fornisce dipendenze preconfigurate", true);
-            createAnswer(answerRepository, s2, "Compila Java in JS", false);
-            createAnswer(answerRepository, s2, "Gestisce database direttamente", false);
-            createAnswer(answerRepository, s2, "Sostituisce JVM", false);
+            createAnswer(answerRepository, s2,
+                    "Fornisce dipendenze preconfigurate", true);
 
-            Quiz tsQuiz = quizRepository.findByName("Typescript").orElseThrow();
+            createAnswer(answerRepository, s2,
+                    "Compila Java in JS", false);
+
+            createAnswer(answerRepository, s2,
+                    "Gestisce database direttamente", false);
+
+            createAnswer(answerRepository, s2,
+                    "Sostituisce JVM", false);
+
+            // =====================================
 
             Question t1 = createQuestion(
                     questionRepository,
                     "Qual è la differenza principale tra TypeScript e JavaScript?",
                     typescript,
-                    tsQuiz,
                     "basics",
                     QuestionStatus.ACCEPTED,
                     QuestionType.SINGOLA,
                     admin
             );
 
-            createAnswer(answerRepository, t1, "TypeScript è tipizzato staticamente", true);
-            createAnswer(answerRepository, t1, "TypeScript è un database", false);
-            createAnswer(answerRepository, t1, "TypeScript sostituisce HTML", false);
-            createAnswer(answerRepository, t1, "TypeScript è un framework backend", false);
+            createAnswer(answerRepository, t1,
+                    "TypeScript è tipizzato staticamente", true);
 
+            createAnswer(answerRepository, t1,
+                    "TypeScript è un database", false);
+
+            createAnswer(answerRepository, t1,
+                    "TypeScript sostituisce HTML", false);
+
+            createAnswer(answerRepository, t1,
+                    "TypeScript è un framework backend", false);
+
+            // =====================================
 
             Question t2 = createQuestion(
                     questionRepository,
                     "Quale comando compila TypeScript?",
                     typescript,
-                    tsQuiz,
                     "compiler",
                     QuestionStatus.ACCEPTED,
                     QuestionType.SINGOLA,
                     admin
             );
 
-            createAnswer(answerRepository, t2, "tsc", true);
-            createAnswer(answerRepository, t2, "npm start", false);
-            createAnswer(answerRepository, t2, "node run", false);
-            createAnswer(answerRepository, t2, "ng build", false);
+            createAnswer(answerRepository, t2,
+                    "tsc", true);
+
+            createAnswer(answerRepository, t2,
+                    "npm start", false);
+
+            createAnswer(answerRepository, t2,
+                    "node run", false);
+
+            createAnswer(answerRepository, t2,
+                    "ng build", false);
+
+            // =====================================
+            // ASSOCIAZIONE DOMANDE -> QUIZ
+            // =====================================
+
+            javaQuiz.setQuestions(List.of(
+                    j1,
+                    j2
+            ));
+
+            javaSpringQuiz.setQuestions(List.of(
+                    j1,
+                    j2,
+                    s1,
+                    s2
+            ));
+
+            typescriptQuiz.setQuestions(List.of(
+                    t1,
+                    t2
+            ));
+
+            angularQuiz.setQuestions(List.of(
+                    t1,
+                    t2
+            ));
+
+            // =====================================
+            // SAVE QUIZ
+            // =====================================
+
+            quizRepository.save(javaQuiz);
+            quizRepository.save(javaSpringQuiz);
+            quizRepository.save(typescriptQuiz);
+            quizRepository.save(angularQuiz);
         };
-
     }
 
-    // =========================
-    // CREATE ROLE
-    // =========================
-    private Role createRole(RoleRepository roleRepository, String descrizione, String codice) {
-        return roleRepository.findByCode(codice)
-                .orElseGet(() -> roleRepository.save(new Role(descrizione, codice)));
+    // =====================================
+    // ROLE
+    // =====================================
+
+    private Role createRole(
+            RoleRepository roleRepository,
+            String description,
+            String code
+    ) {
+
+        return roleRepository.findByCode(code)
+                .orElseGet(() ->
+                        roleRepository.save(
+                                new Role(description, code)
+                        )
+                );
     }
 
-    // =========================
+    // =====================================
     // USER
-    // =========================
-    private void createUser(UserRepository userRepository, PasswordEncoder passwordEncoder, String name,
-                            String surname, String username, String rawPassword, Role role) {
+    // =====================================
+
+    private void createUser(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            String name,
+            String surname,
+            String username,
+            String rawPassword,
+            Role role
+    ) {
+
         if (userRepository.existsByUsername(username)) {
             return;
         }
 
         User user = new User();
+
         user.setName(name);
         user.setSurname(surname);
         user.setUsername(username);
@@ -223,25 +378,34 @@ public class DataInitializer {
         user.setState(UserState.ATTIVO);
         user.setRoles(Set.of(role));
         user.setTotalPoints(0d);
+
         userRepository.save(user);
     }
 
-    // =========================
+    // =====================================
     // CATEGORY
-    // =========================
-    private Category createCategory(CategoryRepository categoryRepository, String name) {
+    // =====================================
+
+    private Category createCategory(
+            CategoryRepository categoryRepository,
+            String name
+    ) {
+
         return categoryRepository.findByName(name)
                 .orElseGet(() -> {
+
                     Category c = new Category();
                     c.setName(name);
+
                     return categoryRepository.save(c);
                 });
     }
 
-    // =========================
+    // =====================================
     // QUIZ
-    // =========================
-    private void createQuiz(
+    // =====================================
+
+    private Quiz createQuiz(
             QuizRepository quizRepository,
             String name,
             String description,
@@ -251,38 +415,40 @@ public class DataInitializer {
             Set<Category> categories
     ) {
 
-        if (quizRepository.existsByName(name)) {
-            return;
-        }
+        return quizRepository.findByName(name)
+                .orElseGet(() -> {
 
-        Quiz quiz = new Quiz();
-        quiz.setName(name);
-        quiz.setDescription(description);
-        quiz.setQuizTime(time);
-        quiz.setTotalPoints(totalPoints);
-        quiz.setCreatedBy(createdBy);
-        quiz.setCategories(categories);
+                    Quiz quiz = new Quiz();
 
-        quizRepository.save(quiz);
+                    quiz.setName(name);
+                    quiz.setDescription(description);
+                    quiz.setQuizTime(time);
+                    quiz.setTotalPoints(totalPoints);
+                    quiz.setCreatedBy(createdBy);
+                    quiz.setCategories(categories);
+
+                    return quizRepository.save(quiz);
+                });
     }
 
-    // =========================
+    // =====================================
     // QUESTION
-    // =========================
+    // =====================================
+
     private Question createQuestion(
             QuestionRepository questionRepository,
             String description,
             Category category,
-            Quiz quiz,
             String tag,
             QuestionStatus status,
             QuestionType type,
             User createdBy
     ) {
+
         Question q = new Question();
+
         q.setDescription(description);
         q.setCategory(category);
-        q.setQuiz(quiz);
         q.setTag(tag);
         q.setStatus(status);
         q.setType(type);
@@ -291,20 +457,23 @@ public class DataInitializer {
         return questionRepository.save(q);
     }
 
-    // =========================
+    // =====================================
     // ANSWER
-    // =========================
+    // =====================================
+
     private void createAnswer(
             AnswerRepository answerRepository,
             Question question,
             String text,
             boolean correct
     ) {
-        Answer a = new Answer();
-        a.setDescription(text);
-        a.setCorrect(correct);
-        a.setQuestion(question);
 
-        answerRepository.save(a);
+        Answer answer = new Answer();
+
+        answer.setDescription(text);
+        answer.setCorrect(correct);
+        answer.setQuestion(question);
+
+        answerRepository.save(answer);
     }
 }

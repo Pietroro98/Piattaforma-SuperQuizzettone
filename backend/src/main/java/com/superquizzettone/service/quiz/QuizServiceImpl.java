@@ -1,6 +1,7 @@
 package com.superquizzettone.service.quiz;
 
 import com.superquizzettone.dto.QuizDTO;
+import com.superquizzettone.model.Question;
 import com.superquizzettone.model.Quiz;
 import com.superquizzettone.repository.quiz.QuizRepository;
 import com.superquizzettone.web.api.exception.BadRequestException;
@@ -66,7 +67,11 @@ public class QuizServiceImpl implements QuizService{
 
     @Override
     public List<Quiz> findQuizByExample(QuizDTO quizExample) {
-        return quizRepository.findByExample(quizExample);
+        List<Quiz> result = quizRepository.findByExample(quizExample);
+        if(result == null){
+            throw new NotFoundException("Risultato nullo");
+        }
+        return result;
     }
 
     @Override

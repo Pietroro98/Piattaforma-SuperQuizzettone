@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.StreamingHttpOutputMessage;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,6 +60,17 @@ public class PlayerController {
                 .body(ResponseJSON.success(200, "Lista recuperata con successo", result));
     }
 
+    @GetMapping("/search-quiz")
+    public ResponseEntity<ResponseJSON<List<QuizDTO>>> findByExampleQuiz(@Valid @RequestBody QuizDTO body){
+        List<QuizDTO> result = QuizDTO.buildListDTOFromModel(this.quizService.findQuizByExample(body));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseJSON.success(200, "Lista recuperata con successo", result));
+    }
+
+    @PostMapping("/create-training-quiz")
+    public ResponseEntity<ResponseJSON<QuizDTO>> createTrainingQuiz (@Valid @RequestBody QuizDTO body){
+        return null;
+    }
     /*
         createTrainingQuiz(Body quizDTO):
         endpoint: POST../player/create-training-quiz
@@ -74,7 +86,5 @@ public class PlayerController {
         endpoint: GET../player/date-range-classification
         findByExampleQuestions(Body questionDTO):
         endpoint: GET../player/search-question
-        findByExampleQuiz(Body quizDTO):
-        endpoint: GET../player/search-quiz
     */
 }
