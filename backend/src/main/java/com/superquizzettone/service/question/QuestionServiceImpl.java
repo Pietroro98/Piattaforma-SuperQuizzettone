@@ -121,7 +121,11 @@ public class QuestionServiceImpl implements QuestionService {
         List<Answer> answers = new ArrayList<>(question.getAnswers());
         question.setAnswers(new ArrayList<>());
 
-        question.setStatus(QuestionStatus.IN_REVIEW);
+        if (question.getStatus() == null) {
+            question.setStatus(QuestionStatus.IN_REVIEW);
+        } else if (question.getStatus() != QuestionStatus.DRAFT && question.getStatus() != QuestionStatus.IN_REVIEW) {
+            throw new BadRequestException("Lo stato iniziale della question deve essere DRAFT oppure IN_REVIEW");
+        }
         question.setCreatedBy(userLoggato);
 
         Question savedQuestion = questionRepository.save(question);

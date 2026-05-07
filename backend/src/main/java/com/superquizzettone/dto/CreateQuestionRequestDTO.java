@@ -2,6 +2,7 @@ package com.superquizzettone.dto;
 
 import com.superquizzettone.model.Answer;
 import com.superquizzettone.model.Question;
+import com.superquizzettone.model.QuestionStatus;
 import com.superquizzettone.model.QuestionType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,6 +29,7 @@ public class CreateQuestionRequestDTO {
     private CategoryDTO category;
 
     private String tag;
+    private QuestionStatus status;
 
     @NotNull(message = "Il tipo non può essere nullo")
     private QuestionType type;
@@ -37,6 +39,7 @@ public class CreateQuestionRequestDTO {
         result.setDescription(description);
         result.setCategory(CategoryDTO.buildModelFromDTO(category));
         result.setTag(tag);
+        result.setStatus(status);
         result.setType(type);
 
         if (answers != null) {
