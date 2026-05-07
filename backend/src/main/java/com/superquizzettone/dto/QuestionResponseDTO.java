@@ -33,7 +33,9 @@ public class QuestionResponseDTO {
         QuestionResponseDTO result = new QuestionResponseDTO();
         result.setId(questionModel.getId());
         result.setDescription(questionModel.getDescription());
-        result.setCategory(CategoryDTO.buildDTOFromModel(questionModel.getCategory()));
+        if(questionModel.getCategory() != null) {
+            result.setCategory(CategoryDTO.buildDTOFromModel(questionModel.getCategory()));
+        }
         result.setTag(questionModel.getTag());
         result.setMotivationRejection(questionModel.getMotivationRejection());
         result.setStatus(questionModel.getStatus());

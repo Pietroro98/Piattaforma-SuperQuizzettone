@@ -118,6 +118,8 @@ public class QuestionServiceImpl implements QuestionService {
             }
 
             question.setCategory(category);
+        } else {
+            question.setCategory(null);
         }
 
         List<Answer> answers = new ArrayList<>(question.getAnswers());

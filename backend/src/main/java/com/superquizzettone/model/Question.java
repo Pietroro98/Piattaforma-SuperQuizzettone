@@ -26,7 +26,7 @@ public class Question {
     private List<Answer> answers = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "category_id",  nullable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne
