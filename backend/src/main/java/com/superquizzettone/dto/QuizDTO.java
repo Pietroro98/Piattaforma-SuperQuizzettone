@@ -30,7 +30,7 @@ public class QuizDTO {
     @NotBlank(message = "Il tempo del quiz non può essere nullo")
     private String quizTime;
 
-    private Set<CategoryDTO> categorys;
+    private Set<CategoryDTO> categories;
 
     private Double totalPoints;
 
@@ -44,7 +44,7 @@ public class QuizDTO {
         result.setDescription(model.getDescription());
         result.setName(model.getName());
         result.setQuizTime(model.getQuizTime());
-        result.setCategorys(model.getCategories().stream()
+        result.setCategories(model.getCategories().stream()
                 .map(CategoryDTO::buildDTOFromModel)
                 .collect(Collectors.toSet()));
         result.setTotalPoints(model.getTotalPoints());
@@ -66,7 +66,7 @@ public class QuizDTO {
         result.setName(dto.getName());
         result.setQuizTime(dto.getQuizTime());
         result.setTotalPoints(dto.getTotalPoints());
-        result.setCategories(dto.getCategorys().stream()
+        result.setCategories(dto.getCategories().stream()
                 .map(CategoryDTO::buildModelFromDTO)
                 .collect(Collectors.toSet()));
         return result;

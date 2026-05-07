@@ -57,4 +57,7 @@ public class Question {
 
     @Column(name = "approvalDate")
     private LocalDateTime approvalDate;
+
+    @ManyToMany(mappedBy = "questions")
+    private List<Quiz> quizzes = new ArrayList<>();
 }

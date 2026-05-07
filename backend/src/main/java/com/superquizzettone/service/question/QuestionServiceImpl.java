@@ -1,4 +1,6 @@
 package com.superquizzettone.service.question;
+import com.superquizzettone.dto.MotivationDTO;
+import com.superquizzettone.dto.QuestionExampleDTO;
 
 import com.superquizzettone.dto.ReviewQuestionRequestDTO;
 import com.superquizzettone.model.*;
@@ -142,6 +144,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Transactional
+    @Override
     public void remove(Long id){
 
         if(id == null){
@@ -170,65 +173,15 @@ public class QuestionServiceImpl implements QuestionService {
         return questionRepository.findMyQuestionsByUserId(userLoggato.getId());
     }
 
-    public List<Question> findByExample(Question example){
-
-        if (example == null){
-            throw new BadRequestException("Elemento di ricerca invalido (example nulla)");
+    @Override
+    @Transactional
+    public List<Question> findByExample(QuestionExampleDTO example) {
+        List<Question> result = questionRepository.findByExample(example);
+        if(result == null){
+            throw new NotFoundException("Risultato nullo");
         }
-
-        Map<String, Object> parameterMap= new HashMap<>();
-        List<String> whereClauses = new ArrayList<>();
-
-        StringBuilder queryBuilder = new StringBuilder("select q from Question q left join q.answers where q.id = q.id");
-
-        if(StringUtils.isNotEmpty(example.getDescription())){
-            whereClauses.add("q.description like :description");
-            parameterMap.put("description", "%" + example.getDescription() + "%");
-        }
-
-        if (StringUtils.isNotEmpty(example.getTag())) {
-            whereClauses.add(" q.tag like :tag ");
-            parameterMap.put("tag", "%" + example.getTag() + "%");
-        }
-        if (StringUtils.isNotEmpty(example.getMotivationRejection())) {
-            whereClauses.add(" q.motivationRejection like :motivationRejection ");
-            parameterMap.put("motivationRejection", "%" + example.getMotivationRejection() + "%");
-        }
-        if (example.getCategory() !=null && example.getCategory().getId() != null) {
-            whereClauses.add(" q.category.id = :categoryId ");
-            parameterMap.put("categoryId", example.getCategory().getId());
-        }
-
-        if (example.getAnswers() != null && !example.getAnswers().isEmpty()) {
-            String answerDescription = example.getAnswers().get(0).getDescription();
-            if (StringUtils.isNotEmpty(answerDescription)) {
-                whereClauses.add(" a.description like :answerDescription ");
-                parameterMap.put("answerDescription", "%" + answerDescription + "%");
-            }
-        }
-
-        if (example.getStatus() != null ){
-            whereClauses.add(" q.status like :status");
-            parameterMap.put("status",  example.getStatus());
-        }
-
-        if (example.getType() != null) {
-            whereClauses.add(" q.type = :type ");
-            parameterMap.put("type", example.getType());
-        }
-
-        queryBuilder.append(!whereClauses.isEmpty() ? " and " : "");
-        queryBuilder.append(org.apache.commons.lang3.StringUtils.join(whereClauses, " and "));
-
-        TypedQuery<Question> typedQuery = entityManager.createQuery(queryBuilder.toString(), Question.class);
-
-        for (String key : parameterMap.keySet()) {
-            typedQuery.setParameter(key, parameterMap.get(key));
-        }
-
-        return typedQuery.getResultList();
+        return result;
     }
-
 
     /**
      * Metodo che consente al reviewer di prendere in carico una question per la revisione,
