@@ -1,8 +1,5 @@
 package com.superquizzettone.web.api;
-import com.superquizzettone.dto.CreateQuestionRequestDTO;
-import com.superquizzettone.dto.QuestionResponseDTO;
-import com.superquizzettone.dto.ResponseJSON;
-import com.superquizzettone.dto.UpdateQuestionRequestDTO;
+import com.superquizzettone.dto.*;
 import com.superquizzettone.model.Question;
 import com.superquizzettone.service.question.QuestionService;
 import com.superquizzettone.service.quiz.QuizService;
@@ -25,6 +22,16 @@ public class WriterController {
 
     @PostMapping("/create-question")
     public ResponseEntity<ResponseJSON<QuestionResponseDTO>> createQuestion(@RequestBody @Valid CreateQuestionRequestDTO questionInput) {
+        Question question = questionService.insertNew(questionInput.toModel());
+        QuestionResponseDTO responseData = QuestionResponseDTO.fromModel(question);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ResponseJSON.success(201, "Domanda creata con successo.", responseData));
+    }
+
+    @PostMapping("/save-draft")
+    public ResponseEntity<ResponseJSON<QuestionResponseDTO>> saveQuestionToDraft(@RequestBody DraftQuestionRequestDTO questionInput) {
         Question question = questionService.insertNew(questionInput.toModel());
         QuestionResponseDTO responseData = QuestionResponseDTO.fromModel(question);
 

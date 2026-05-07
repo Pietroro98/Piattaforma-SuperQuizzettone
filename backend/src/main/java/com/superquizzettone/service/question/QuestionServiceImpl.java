@@ -83,11 +83,14 @@ public class QuestionServiceImpl implements QuestionService {
             throw new BadRequestException("Una nuova question non puo avere un id valorizzato");
         }
 
-        if (question.getAnswers() == null) {
-            throw new BadRequestException("La question deve contenere almeno 4 risposte");
+        if(question.getStatus() != QuestionStatus.DRAFT){
+            if (question.getAnswers() == null) {
+                throw new BadRequestException("La question deve contenere almeno 4 risposte");
+            }
+
+            validateAnswers(question);
         }
 
-        validateAnswers(question);
 
         User userLoggato = userService.findByUsername(SecurityUtils.getUsername());
         if (userLoggato == null) {
@@ -118,6 +121,8 @@ public class QuestionServiceImpl implements QuestionService {
             }
 
             question.setCategory(category);
+        } else {
+            question.setCategory(null);
         }
 
         List<Answer> answers = new ArrayList<>(question.getAnswers());
