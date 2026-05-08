@@ -3,17 +3,15 @@ package com.superquizzettone.web.api;
 import com.superquizzettone.dto.QuestionExampleDTO;
 import com.superquizzettone.dto.QuizDTO;
 
+import com.superquizzettone.dto.QuizTrainingSampleDTO;
 import com.superquizzettone.dto.ResponseJSON;
-import com.superquizzettone.model.Question;
 import com.superquizzettone.service.question.QuestionService;
 import com.superquizzettone.service.quiz.QuizService;
 import com.superquizzettone.service.utente.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.StreamingHttpOutputMessage;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -68,12 +66,12 @@ public class PlayerController {
     }
 
     @PostMapping("/create-training-quiz")
-    public ResponseEntity<ResponseJSON<QuizDTO>> createTrainingQuiz (@Valid @RequestBody QuizDTO body){
-        return null;
+    public ResponseEntity<ResponseJSON<QuizDTO>> createTrainingQuiz (@Valid @RequestBody QuizTrainingSampleDTO body){
+        QuizDTO result = quizService.createTrainingQuiz(body);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseJSON.success(200, "Quiz di allenamento creato con successo", result));
     }
     /*
-        createTrainingQuiz(Body quizDTO):
-        endpoint: POST../player/create-training-quiz
         sendAnswers(Body answerDTO[]):
         endpoint: POST../player/send-answers
         receiveResults(QuizDTO body):

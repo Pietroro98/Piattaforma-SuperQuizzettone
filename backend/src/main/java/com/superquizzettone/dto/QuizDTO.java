@@ -48,15 +48,11 @@ public class QuizDTO {
                 .map(CategoryDTO::buildDTOFromModel)
                 .collect(Collectors.toSet()));
         result.setTotalPoints(model.getTotalPoints());
-        if(model.getQuestions() != null){
-            model.getQuestions()
-                    .stream()
-                    .map(Question::getId)
-                    .toList()
-                    .size();
-        } else {
-            result.setQuestions(0);
-        }
+        result.setQuestions(
+                model.getQuestions() != null
+                        ? model.getQuestions().size()
+                        : 0
+        );
         return result;
     }
 

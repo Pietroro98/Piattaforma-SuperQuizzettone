@@ -115,4 +115,11 @@ public class CustomExceptionHandler  {
 				.body(ResponseJSON.error(HttpStatus.CONFLICT.value(), ex.getMessage()));
 	}
 
+	@ExceptionHandler(InsufficientDurationException.class)
+	public ResponseEntity<ResponseJSON<Void>> handleInsufficientDurationException(InsufficientDurationException ex, WebRequest request) {
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(ResponseJSON.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+	}
+
 }

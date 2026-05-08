@@ -52,7 +52,7 @@ public class DataInitializer {
                     Role.ROLE_REVIEWER
             );
 
-            createRole(
+            Role playerRole = createRole(
                     roleRepository,
                     "Player",
                     Role.ROLE_PLAYER
@@ -90,6 +90,16 @@ public class DataInitializer {
                     "Reviewer1",
                     "Reviewer_123",
                     reviewerRole
+            );
+
+            createUser(
+                    userRepository,
+                    passwordEncoder,
+                    "Player",
+                    "Giocatore",
+                    "Player1",
+                    "Player_123",
+                    playerRole
             );
 
             User admin = userRepository

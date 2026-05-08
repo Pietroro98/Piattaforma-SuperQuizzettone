@@ -1,5 +1,6 @@
 package com.superquizzettone.repository.quiz;
 
+import com.superquizzettone.model.Category;
 import com.superquizzettone.model.Quiz;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface QuizRepository extends QuizRepositoryCustom, JpaRepository<Quiz, Long> {
 
@@ -32,4 +34,5 @@ public interface QuizRepository extends QuizRepositoryCustom, JpaRepository<Quiz
     Boolean existsByName(String name);
 
     Optional<Quiz> findByName(String name);
+
 }
