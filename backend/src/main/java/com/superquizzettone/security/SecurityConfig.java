@@ -43,32 +43,22 @@ SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        // 1. PRIMA REGOLA: Autorizza il "pre-flight" del browser
-                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // 2. SECONDA REGOLA: Dispatcher per errori e forward
-                        .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
-
-                        // 3. TUTTI GLI ALTRI MATCHERS
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/open-controller/**").permitAll()
-                        .requestMatchers("/api/reviewer/**").permitAll()
-                        .requestMatchers("/api/player/**").permitAll()
-                        .requestMatchers("/api/utente/**").permitAll()
-                        .requestMatchers("/api/writer/**").hasAnyRole("WRITER", "ADMINISTRATOR")
-                        .requestMatchers("/api/admin/**").hasRole("ADMINISTRATOR")
-
-                        // CHIUSURA
-                        .anyRequest().authenticated())
-
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(unauthorizedHandler)
-                        .accessDeniedHandler(accessDeniedHandler))
-
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+             .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
+                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/check-username").permitAll()
+                .requestMatchers("/api/player/**").hasAnyRole("PLAYER", "ADMINISTRATOR")
+                .requestMatchers("/api/utente/userInfo", "/api/utente/changePassword", "/api/open-controller/**").authenticated()
+                .requestMatchers("/api/reviewer/**").hasAnyRole("REVIEWER", "ADMINISTRATOR")
+                .requestMatchers("/api/writer/**").hasAnyRole("WRITER", "ADMINISTRATOR")
+                .requestMatchers("/api/admin/**").hasRole("ADMINISTRATOR")
+                .anyRequest().authenticated())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authenticationProvider(authenticationProvider())
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(unauthorizedHandler)
+                .accessDeniedHandler(accessDeniedHandler))
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -91,7 +81,7 @@ SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Configura le stesse regole che avevi nel WebConfig
-        configuration.setAllowedOrigins(List.of("http://localhost:54130", "http://localhost:4200"));
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
