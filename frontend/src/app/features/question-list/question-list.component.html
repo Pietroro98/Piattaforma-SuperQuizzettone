@@ -1,0 +1,59 @@
+  <form class="d-flex">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+  </form>
+
+
+    <div class="accordion" id="accordionExample">
+
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Accordion Item #1
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <div class="accordion" id="faqBackend">
+    
+    <app-accordion *ngFor="let q of questions; let i = index"
+      [title] = "q.description"
+      [id] ="'Question-' + q.id">
+
+      <!-- SEZIONE DESCRIZIONE -->
+      <div class="mb-3">
+        <span class="badge bg-info text-dark">{{ q.category.name }}</span>
+        <span class="ms-2 badge bg-secondary">#{{ q.tag }}</span>
+      </div>
+
+     <div class="risposte-container">
+        <strong>Possibili Risposte:</strong>
+        <ul class="list-group mt-2">
+          <li *ngFor="let ans of q.answers" 
+              class="list-group-item d-flex justify-content-between align-items-center">
+            
+            {{ ans.description }}
+
+            <!-- Visualizziamo se è corretta solo per controllo admin/reviewer -->
+            <span *ngIf="ans.isCorrect" class="badge bg-success rounded-pill">Corretta</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Se c'è una motivazione di rifiuto, mostriamola -->
+      <div *ngIf="q.motivationRejection" class="alert alert-danger mt-3">
+        <strong>Rifiutata:</strong> {{ q.motivationRejection }}
+      </div>
+
+    </app-accordion>
+    
+</div>

@@ -1,0 +1,21 @@
+
+<div class="accordion-item">
+
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" 
+                data-bs-toggle="collapse" 
+                [attr.data-bs-target]="'#' + id">
+
+          {{title}}
+      </button>  
+
+    </h2>
+
+    <div [id]="id" class="accordion-collapse collapse">
+      <div class="accordion-body">
+          {{description}}
+        <ng-content></ng-content>
+      </div>
+    </div>
+
+</div>
