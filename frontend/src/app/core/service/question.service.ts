@@ -10,7 +10,7 @@ export class QuestionService {
 
   private readonly http = inject(HttpClient);
   private readonly storage = inject(StorageService);
-  baseUrl: string = 'http://192.168.5.76:8080/superQuizzettone/api'; 
+  baseUrl: string = 'http://localhost:8080';
 
 
   createQuestion(payload: Question): Observable<any> {
@@ -28,7 +28,7 @@ export class QuestionService {
   }
 
 getQuestionsInReview() : Observable<any> {
-  return this.http.get(`${this.baseUrl}/reviewer/questions/in-review`);
+  return this.http.get(`${this.baseUrl}/superQuizzettone/api/open-controller/all-questions`);
 }
 
 
