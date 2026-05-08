@@ -1,6 +1,5 @@
 <div class="container-fluid px-0">
   <nav class="navbar navbar-dark bg-primary px-3">
-
     <button class="btn btn-light" (click)="toggleSidenav()">
       <span *ngIf="!isOpen" class="bi bi-list"></span>
       <span *ngIf="isOpen" class="bi bi-x"></span>
@@ -8,12 +7,23 @@
 
     <button class="bi bi-book" routerLink="/home"></button>
 
-    <button class="avatar" *ngIf="(user$ | async) as user; else noUser">
-      {{ getInitials(user.name, user.surname) }}
-    </button>
+    <div class="dropdown">
+      <button
+        class="avatar"
+        type="button"
+        data-bs-toggle="dropdown"
+        *ngIf="initials$ | async as initials; else noUser"
+      >
+        {{ initials }}
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+        <li><a class="dropdown-item" href="#">Vai al profilo</a></li>
+        <li><a class="dropdown-item" href="#">Logout</a></li>
+      </ul>
+    </div>
+
     <ng-template #noUser>
-      <button class="avatar"></button>
+      <button class="avatar">?</button>
     </ng-template>
-    
   </nav>
 </div>

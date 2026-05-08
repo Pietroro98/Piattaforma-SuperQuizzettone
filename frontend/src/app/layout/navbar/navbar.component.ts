@@ -18,19 +18,21 @@ export class NavbarComponent {
   @Input() isOpen = false;
   @Output() toggle = new EventEmitter<void>();
   user$: Observable<Omit<User, 'password'> | null>;
+  initials$: Observable<string | null>;
 
   constructor(private readonly layoutSvc: LayoutService, private authService: AuthService) {
     this.layoutSvc.collapsed$.subscribe(next => {
       this.isOpen = next;
     })
     this.user$ = this.authService.currentUser$;
+    this.initials$ = this.authService.initials$;
   }
 
-  getInitials(firstName?: string, lastName?: string): string {
-    if (!firstName && !lastName) return '';
+  getInitials(nome?: string, cognome?: string): string {
+    if (!nome && !cognome) return '?';
 
-    const first = firstName ? firstName.charAt(0) : '';
-    const last = lastName ? lastName.charAt(0) : '';
+    const first = nome ? nome.charAt(0) : '';
+    const last = cognome ? cognome.charAt(0) : '';
 
     return (first + last).toUpperCase();
   }

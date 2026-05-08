@@ -1,14 +1,13 @@
 export interface User {
-  id: number;
-  name: string;
-  surname: string;
+  nome: string;
+  cognome: string;
   username: string;
   password: string;
-  creationDate: string;
-  state: UserState;
-  totalPoints: number;
-  attempts: number;
-  roles: Role[];
+  dataRegistrazione: string;
+  stato: string;
+  totalPoint: number;
+  attempts: any[];
+  roles: string[];
 }
 
 export enum UserState {
@@ -24,6 +23,7 @@ export enum Role {
 }
 
 export interface AuthResponse {
-  token: string;
-  user: Omit<User, 'password'>;
+  status: number;
+  message: string;
+  data: Omit<User, 'password'>;
 }
