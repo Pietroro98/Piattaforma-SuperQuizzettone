@@ -11,21 +11,21 @@ import java.util.List;
 @Setter
 public class UtenteInfoJWTResponseDTO {
 
-    private String nome;
-    private String cognome;
+    private String name;
+    private String surname;
     private String type = "Bearer";
     private String username;
-    private UserState stato;
+    private UserState state;
     private List<String> roles;
     private List<QuizPlayed> attempts;
-    private LocalDate dataRegistrazione;
+    private LocalDate registrationDate;
     private Double totalPoint;
 
-    public UtenteInfoJWTResponseDTO(String nome, String cognome, String username, UserState stato, List<String> roles, List<QuizPlayed> attempts, LocalDate dataRegistrazione, Double totalPoint) {
-        this.nome = nome;
-        this.cognome = cognome;
+    public UtenteInfoJWTResponseDTO(String name, String surname, String username, UserState state, List<String> roles, List<QuizPlayed> attempts, LocalDate registrationDate, Double totalPoint) {
+        this.name = name;
+        this.surname = surname;
         this.username = username;
-        this.stato = stato;
+        this.state = state;
         this.totalPoint = totalPoint;
         this.roles = roles;
         this.attempts = attempts == null ? List.of() : attempts.stream().map(attempt -> {
@@ -40,6 +40,6 @@ public class UtenteInfoJWTResponseDTO {
             quizPlayed.setTimeSpent(attempt.getTimeSpent());
             return quizPlayed;
         }).toList();
-        this.dataRegistrazione = dataRegistrazione;
+        this.registrationDate = registrationDate;
     }
 }

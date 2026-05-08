@@ -1,6 +1,7 @@
 package com.superquizzettone.service.quiz;
 
 import com.superquizzettone.dto.QuizDTO;
+import com.superquizzettone.dto.QuizTrainingSampleDTO;
 import com.superquizzettone.model.Quiz;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,5 +28,6 @@ public interface QuizService {
 
     public Page<Quiz> listAllQuizPaginated(Pageable pageable);
 
+    public QuizDTO createTrainingQuiz(QuizTrainingSampleDTO dto);
 
 }

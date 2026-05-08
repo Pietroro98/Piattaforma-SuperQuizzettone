@@ -12,10 +12,7 @@ import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class QuestionRepositoryCustomImpl implements QuestionRepositoryCustom {
 
@@ -73,6 +70,75 @@ public class QuestionRepositoryCustomImpl implements QuestionRepositoryCustom {
 
         for (String key : paramaterMap.keySet()) {
             typedQuery.setParameter(key, paramaterMap.get(key));
+        }
+
+        return typedQuery.getResultList();
+    }
+
+    @Override
+    public List<Question> findTrainingQuestions(
+            Set<Long> categoryIds,
+            Integer numberOfQuestions
+    ) {
+
+        StringBuilder queryBuilder = new StringBuilder();
+
+        Map<String, Object> parameterMap = new HashMap<>();
+
+        // =========================================
+        // BASE QUERY
+        // =========================================
+
+        queryBuilder.append("""
+                    select q
+                    from Question q
+                    where 1 = 1
+                """);
+
+        // =========================================
+        // FILTER CATEGORIES
+        // =========================================
+
+        if (categoryIds != null && !categoryIds.isEmpty()) {
+
+            queryBuilder.append("""
+                         and q.category.id in :categoryIds
+                    """);
+
+            parameterMap.put(
+                    "categoryIds",
+                    categoryIds
+            );
+        }
+
+        // =========================================
+        // ONLY ACCEPTED QUESTIONS
+        // =========================================
+
+        queryBuilder.append("""
+                     and q.status = 'ACCEPTED'
+                """);
+
+        // =========================================
+        // CREATE QUERY
+        // =========================================
+
+        TypedQuery<Question> typedQuery =
+                entityManager.createQuery(
+                        queryBuilder.toString(),
+                        Question.class
+                );
+
+        // =========================================
+        // SET PARAMETERS
+        // =========================================
+
+        for (String key : parameterMap.keySet()) {
+
+            typedQuery.setParameter(
+                    key,
+                    parameterMap.get(key)
+            );
         }
 
         return typedQuery.getResultList();
