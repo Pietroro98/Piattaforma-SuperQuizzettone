@@ -27,4 +27,9 @@ export class QuestionService {
           map((response) => response.data));
   }
 
+getQuestionsInReview() : Observable<any> {
+  return this.http.get(`${this.baseUrl}/reviewer/questions/in-review`);
+}
+
+
 }

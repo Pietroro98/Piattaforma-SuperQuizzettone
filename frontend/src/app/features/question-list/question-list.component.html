@@ -1,8 +1,7 @@
-
-<form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-    </form>
+  <form class="d-flex">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+  </form>
 
 
     <div class="accordion" id="accordionExample">
@@ -20,11 +19,41 @@
     </div>
   </div>
 
- 
-</div>
 
-    <div class="accordion-container" *ngFor="let q all questions">
-        <app-accordion [title]="q.title">
-            <p>{{q.content}}</p>
-        </app-accordion>
-    </div>
+
+
+
+  <div class="accordion" id="faqBackend">
+    
+    <app-accordion *ngFor="let q of questions; let i = index"
+      [title] = "q.description"
+      [id] ="'Question-' + q.id">
+
+      <!-- SEZIONE DESCRIZIONE -->
+      <div class="mb-3">
+        <span class="badge bg-info text-dark">{{ q.category.name }}</span>
+        <span class="ms-2 badge bg-secondary">#{{ q.tag }}</span>
+      </div>
+
+     <div class="risposte-container">
+        <strong>Possibili Risposte:</strong>
+        <ul class="list-group mt-2">
+          <li *ngFor="let ans of q.answers" 
+              class="list-group-item d-flex justify-content-between align-items-center">
+            
+            {{ ans.description }}
+
+            <!-- Visualizziamo se è corretta solo per controllo admin/reviewer -->
+            <span *ngIf="ans.isCorrect" class="badge bg-success rounded-pill">Corretta</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Se c'è una motivazione di rifiuto, mostriamola -->
+      <div *ngIf="q.motivationRejection" class="alert alert-danger mt-3">
+        <strong>Rifiutata:</strong> {{ q.motivationRejection }}
+      </div>
+
+    </app-accordion>
+    
+</div>
