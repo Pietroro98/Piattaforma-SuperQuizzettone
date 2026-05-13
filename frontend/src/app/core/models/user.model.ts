@@ -1,10 +1,10 @@
 export interface User {
-  nome: string;
-  cognome: string;
+  name: string;
+  surname: string;
   username: string;
   password: string;
-  dataRegistrazione: string;
-  stato: string;
+  registrationDate: string;
+  state: string;
   totalPoint: number;
   attempts: any[];
   roles: string[];

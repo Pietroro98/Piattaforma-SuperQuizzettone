@@ -44,7 +44,7 @@ export class AuthService {
       switchMap(() => this.getCurrentUserNameAndLastName()),
         tap((userInfo: AuthResponse) => {
           const user = userInfo.data;
-          const initials = (user.nome.charAt(0) + user.cognome.charAt(0)).toUpperCase();
+          const initials = (user.name.charAt(0) + user.surname.charAt(0)).toUpperCase();
           this.storage.set('initials', initials);
           this.initialsSubject.next(initials);
         })
