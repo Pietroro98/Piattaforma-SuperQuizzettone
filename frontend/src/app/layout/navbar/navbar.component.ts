@@ -1,14 +1,15 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { LayoutService } from '../layout.service';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { AuthService } from '../../core/service/auth.service';
 import { Observable } from 'rxjs';
 import { User } from '../../core/models/user.model';
+import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-navbar',
-  imports: [NgIf, RouterLink, AsyncPipe],
+  imports: [NgIf, RouterLink, AsyncPipe, ConfirmDialog],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   providers: []
@@ -19,8 +20,9 @@ export class NavbarComponent {
   @Output() toggle = new EventEmitter<void>();
   user$: Observable<Omit<User, 'password'> | null>;
   initials$: Observable<string | null>;
+  confirmDialogOpen = false;
 
-  constructor(private readonly layoutSvc: LayoutService, private authService: AuthService) {
+  constructor(private readonly layoutSvc: LayoutService, private authService: AuthService, private router: Router) {
     this.layoutSvc.collapsed$.subscribe(next => {
       this.isOpen = next;
     })
@@ -38,14 +40,21 @@ export class NavbarComponent {
   }
 
   confirmLogout() {
-    // da implementare
-  }
-
-  logout() {
     this.authService.logout();
+    this.closeConfirmDialog();
+    this.router.navigate(['/login']);
   }
 
   toggleSidenav() {
     this.toggle.emit();
   }
+
+  closeConfirmDialog() {
+    this.confirmDialogOpen = false;
+  }
+
+  openConfirmDialog() {
+    this.confirmDialogOpen = true;
+  }
+
 }
