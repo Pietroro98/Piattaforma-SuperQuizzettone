@@ -4,21 +4,24 @@ import { QuestionCreatorComponent } from './features/question-creator/question-c
 import { AuthComponent } from './features/authentication/auth/auth.component';
 import { LoginComponent } from './features/authentication/login/login.component';
 import { RegisterComponent } from './features/authentication/register/register.component';
-import {  QuestionListComponent } from './features/question-list/question-list.component';
+import { QuestionListComponent } from './features/question-list/question-list.component';
+import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   {
     path: '',
     redirectTo: '/home',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'home',
     component: HomepageComponent,
+    canActivate: [authGuard],
   },
-   {
+  {
     path: 'question-list',
-    component: QuestionListComponent
+    component: QuestionListComponent,
+    canActivate: [authGuard],
   },
   {
     path: '',
@@ -26,20 +29,22 @@ export const routes: Routes = [
     children: [
       { path: 'login', component: LoginComponent },
       { path: 'register', component: RegisterComponent },
-      { path: '', redirectTo: 'login', pathMatch: 'full' }
-    ]
+      { path: '', redirectTo: 'login', pathMatch: 'full' },
+    ],
   },
-   {
+  {
     path: 'question-list',
-    component: QuestionListComponent, //CAMBIARE COMPONENTE CON QUELLO DELLA LISTA DI DOMANDE
-  }, 
-   {
+    component: QuestionListComponent,
+    canActivate: [authGuard],
+  },
+  {
     path: 'question-creation',
     component: QuestionCreatorComponent,
+    canActivate: [authGuard],
   },
   {
     path: '**',
     redirectTo: '/home',
-    pathMatch: 'full'
-  }
+    pathMatch: 'full',
+  },
 ];
