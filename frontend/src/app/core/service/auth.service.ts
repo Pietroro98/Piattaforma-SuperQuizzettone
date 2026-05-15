@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, map, switchMap, tap } from 'rxjs';
 import { StorageService } from './storage.service';
 import { AuthResponse, User } from '../models/user.model';
+import { JsonPipe } from '@angular/common';
 
 export interface LoginPayload {
   username: string;
@@ -99,4 +100,12 @@ export class AuthService {
     return this.http.get<AuthResponse>(`${this.baseUrl}/utente/userInfo`);
   }
 
+  isLoggedIn(): boolean {
+    return !!this.token();
+  }
+
+  hasAnyRole(allowedRoles: string[]): boolean {
+    const userRoles = this.userRole() ?? [];
+    return allowedRoles.some((role) => userRoles.includes(role));
+  }
 }
