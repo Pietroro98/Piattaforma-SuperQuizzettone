@@ -8,17 +8,12 @@
     <button class="bi bi-book" routerLink="/home"></button>
 
     <div class="dropdown">
-      <button
-        class="avatar"
-        type="button"
-        data-bs-toggle="dropdown"
-        *ngIf="initials$ | async as initials; else noUser"
-      >
+      <button class="avatar" type="button" data-bs-toggle="dropdown" *ngIf="initials$ | async as initials; else noUser">
         {{ initials }}
       </button>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
         <li><a class="dropdown-item" href="#">Vai al profilo</a></li>
-        <li><a class="dropdown-item" href="#">Logout</a></li>
+        <li><a class="dropdown-item" (click)="openConfirmDialog()">Logout</a></li>
       </ul>
     </div>
 
@@ -27,3 +22,8 @@
     </ng-template>
   </nav>
 </div>
+
+@if (confirmDialogOpen) {
+<app-confirm-dialog title="Stai per procedere al logout." message="Sei sicuro di voler continuare?"
+  (confirm)="confirmLogout()" (cancel)="closeConfirmDialog()"></app-confirm-dialog>
+}

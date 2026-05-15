@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, map, switchMap, tap } from 'rxjs';
 import { StorageService } from './storage.service';
 import { AuthResponse, User } from '../models/user.model';
+import { JsonPipe } from '@angular/common';
 
 export interface LoginPayload {
   username: string;
@@ -45,7 +46,7 @@ export class AuthService {
       switchMap(() => this.getCurrentUserNameAndLastName()),
         tap((userInfo: AuthResponse) => {
           const user = userInfo.data;
-          const initials = (user.nome.charAt(0) + user.cognome.charAt(0)).toUpperCase();
+          const initials = (user.name.charAt(0) + user.surname.charAt(0)).toUpperCase();
           this.storage.set('initials', initials);
           this.initialsSubject.next(initials);
           this.storage.set('roles', userInfo.data.roles);
@@ -102,4 +103,12 @@ export class AuthService {
     return this.http.get<AuthResponse>(`${this.baseUrl}/utente/userInfo`);
   }
 
+  isLoggedIn(): boolean {
+    return !!this.token();
+  }
+
+  hasAnyRole(allowedRoles: string[]): boolean {
+    const userRoles = this.userRole() ?? [];
+    return allowedRoles.some((role) => userRoles.includes(role));
+  }
 }

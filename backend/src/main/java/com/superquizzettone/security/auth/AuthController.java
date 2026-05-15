@@ -67,7 +67,7 @@ public class AuthController {
             );
         } catch (AuthenticationException authExc) {
             log.warn("Login fallito per username '{}': {}", body.getUsername(), authExc.getClass().getSimpleName());
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Login Credentials");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Login Credentials");
         }
     }
 

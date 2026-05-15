@@ -15,7 +15,11 @@ import java.util.Optional;
 public class SecurityUtils {
 
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public SecurityUtils(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     private static boolean hasRole(String role) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -41,6 +45,14 @@ public class SecurityUtils {
 
     public static String getUsername() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    public User getLoggedUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        return this.userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
     }
 
     public static Long getUserId() {

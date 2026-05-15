@@ -1,1 +1,33 @@
-<p>confirm-dialog works!</p>
+<div class="dialog-backdrop">
+  <div class="dialog-card">
+    <div class="dialog-icon">
+      !
+    </div>
+
+    <h2 class="dialog-title">
+      {{ title }}
+    </h2>
+
+    <p class="dialog-message">
+      {{ message }}
+    </p>
+
+    <div class="dialog-actions">
+      <button
+        type="button"
+        class="btn-cancel"
+        (click)="onCancel()"
+      >
+        ANNULLA
+      </button>
+
+      <button
+        type="button"
+        class="btn-confirm"
+        (click)="onConfirm()"
+      >
+        CONFERMA
+      </button>
+    </div>
+  </div>
+</div>
