@@ -4,7 +4,7 @@ import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../service/auth.service';
 import { Router } from '@angular/router';
 
-export const authInterceptorInterceptor: HttpInterceptorFn = (req, next) => {
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
    const authService = inject(AuthService);
   const router = inject(Router);
 
@@ -31,5 +31,4 @@ export const authInterceptorInterceptor: HttpInterceptorFn = (req, next) => {
       return throwError(() => error);
     })
   );
-  return next(req);
 };

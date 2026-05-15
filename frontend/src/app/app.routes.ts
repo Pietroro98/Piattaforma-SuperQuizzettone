@@ -5,6 +5,7 @@ import { AuthComponent } from './features/authentication/auth/auth.component';
 import { LoginComponent } from './features/authentication/login/login.component';
 import { RegisterComponent } from './features/authentication/register/register.component';
 import { QuestionListComponent } from './features/question-list/question-list.component';
+import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   {
@@ -15,10 +16,12 @@ export const routes: Routes = [
   {
     path: 'home',
     component: HomepageComponent,
+    canActivate: [authGuard],
   },
   {
     path: 'question-list',
     component: QuestionListComponent,
+    canActivate: [authGuard],
   },
   {
     path: '',
@@ -32,10 +35,12 @@ export const routes: Routes = [
   {
     path: 'question-list',
     component: QuestionListComponent,
+    canActivate: [authGuard],
   },
   {
     path: 'question-creation',
     component: QuestionCreatorComponent,
+    canActivate: [authGuard],
   },
   {
     path: '**',
