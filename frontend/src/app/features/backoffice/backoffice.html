@@ -1,0 +1,53 @@
+<!-- <button (click)="prova()">prova (controlla console)</button>
+
+<button routerLink="/question-list">Vai alle domande</button>
+
+<button routerLink="/question-creation">Creazione domanda</button> -->
+
+<div class="home-page">
+  <section class="hero-card">
+    <div>
+      <p class="eyebrow">Dashboard</p>
+      <h1>Benvenuto</h1>
+      <p class="subtitle">
+        Gestisci domande, crea nuovi quiz e controlla rapidamente le attività principali.
+      </p>
+
+      <div class="hero-actions">
+        <button class="primary-btn" routerLink="/question-creation">
+          Crea domanda
+        </button>
+
+        <button class="secondary-btn" routerLink="/question-list">
+          Vai alle domande
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="quick-actions">
+    <div class="section-header">
+      <h2>Azioni rapide</h2>
+    </div>
+
+    <div class="cards-grid">
+      <article class="action-card" routerLink="/question-list">
+        <div class="icon-box">?</div>
+        <h3>Lista domande</h3>
+        <p>Visualizza, modifica e organizza le domande già create.</p>
+      </article>
+
+      <article class="action-card" routerLink="/question-creation">
+        <div class="icon-box">+</div>
+        <h3>Nuova domanda</h3>
+        <p>Crea una nuova domanda per i tuoi quiz.</p>
+      </article>
+
+      <article class="action-card">
+        <div class="icon-box">⌁</div>
+        <h3>Nuovo Quiz</h3>
+        <p>Crea un nuovo Quiz per il tuo allenamento</p>
+      </article>
+    </div>
+  </section>
+</div>

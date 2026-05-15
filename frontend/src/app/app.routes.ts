@@ -6,6 +6,7 @@ import { LoginComponent } from './features/authentication/login/login.component'
 import { RegisterComponent } from './features/authentication/register/register.component';
 import { QuestionListComponent } from './features/question-list/question-list.component';
 import { authGuard } from './core/guards/auth-guard';
+import { BackofficeComponent } from './features/backoffice/backoffice';
 
 export const routes: Routes = [
   {
@@ -31,6 +32,11 @@ export const routes: Routes = [
       { path: 'register', component: RegisterComponent },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],
+  },
+  {
+    path: 'backoffice',
+    component: BackofficeComponent,
+    canActivate: [authGuard],
   },
   {
     path: 'question-list',

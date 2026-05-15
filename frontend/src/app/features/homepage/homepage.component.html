@@ -1,5 +1,114 @@
-<button (click)="prova()">prova (controlla console)</button>
+<div class="home-page">
+  <div class="home-layout">
+    <main class="home-main">
+      <section class="profile-card">
+        <div class="profile-content">
+          <p class="eyebrow">Dashboard</p>
 
-<button routerLink="/question-list">Vai alle domande</button>
+          <h1>Benvenuto nella tua area quiz</h1>
 
-<button routerLink="/question-creation">Creazione domanda</button>
+          <p class="subtitle">
+            Tieni sotto controllo i tuoi quiz, le domande create e i risultati ottenuti.
+          </p>
+
+          <div class="progress-wrapper">
+            <div class="progress-bar">
+              <span></span>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <article class="stat-card">
+              <strong>27</strong>
+              <span>Quiz completati</span>
+            </article>
+
+            <article class="stat-card">
+              <strong>120</strong>
+              <span>Domande disponibili</span>
+            </article>
+
+            <article class="stat-card">
+              <strong>84%</strong>
+              <span>Risposte corrette</span>
+            </article>
+          </div>
+
+          <div class="actions">
+            <button class="primary-btn" routerLink="/play">
+              Inizia quiz
+            </button>
+
+            <button class="secondary-btn" routerLink="/question-list">
+              Vai alle domande
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="quizzes-section">
+        <div class="section-header">
+          <h2>Quiz recenti</h2>
+          <a routerLink="/play">Vedi tutti</a>
+        </div>
+
+        <div class="quiz-grid">
+          @for (quiz of quizzes; track quiz.title) {
+            <article class="quiz-card">
+              <div class="quiz-badge">{{ quiz.duration }}</div>
+
+              <div class="quiz-card-content">
+                <h3>{{ quiz.title }}</h3>
+                <p>{{ quiz.description }}</p>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+    </main>
+
+    <aside class="home-aside">
+      <section class="side-card">
+        <h3>Riepilogo attività</h3>
+
+        <div class="activity-list">
+          <div class="activity-item">
+            <span>Quiz creati</span>
+            <strong>8</strong>
+          </div>
+
+          <div class="activity-item">
+            <span>Quiz svolti</span>
+            <strong>27</strong>
+          </div>
+
+          <div class="activity-item">
+            <span>Domande create</span>
+            <strong>120</strong>
+          </div>
+
+          <div class="activity-item">
+            <span>Miglior punteggio</span>
+            <strong>96%</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="side-card">
+        <h3>Azioni rapide</h3>
+
+        <button class="side-btn" routerLink="/question-creation">
+          Crea domanda
+        </button>
+
+        <button class="side-btn" routerLink="/question-list">
+          Gestisci domande
+        </button>
+
+        <button class="side-btn" routerLink="/backoffice">
+          Backoffice
+        </button>
+      </section>
+    </aside>
+  </div>
+</div>
