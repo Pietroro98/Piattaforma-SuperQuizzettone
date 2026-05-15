@@ -31,7 +31,7 @@ export const routes: Routes = [
   },
    {
     path: 'question-list',
-    component: QuestionListComponent, //CAMBIARE COMPONENTE CON QUELLO DELLA LISTA DI DOMANDE
+    component: QuestionListComponent,
   }, 
    {
     path: 'question-creation',

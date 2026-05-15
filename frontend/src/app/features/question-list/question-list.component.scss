@@ -1,9 +1,18 @@
-.d-flex {
-    
-    width: 300px;
-    display: flex;
-    justify-content:right; /* Opzione A: Spazia gli elementi agli estremi */
-    align-items:center;
-    margin-left: 800px;
-    padding-bottom: 10px;
+.btn-actions {
+  display: flex;
+  justify-content: flex-end;  /* "right" non è un valore standard */
+  align-items: center;
+  padding-bottom: 10px;
+  /* margin-left: 800px  ← rimuovi, usa justify-content per allineare */
+}
+
+
+.answers-container{
+    width: auto;
+}
+
+.risposte-fit{
+    width: fit-content;
+    max-width: 600px;
+    min-width: 300px;
 }

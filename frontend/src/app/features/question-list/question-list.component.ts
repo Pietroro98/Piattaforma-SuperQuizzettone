@@ -3,6 +3,7 @@ import { Accordion } from '../accordion/accordion';
 import { Question } from '../../core/models/question.model';
 import { QuestionService } from '../../core/service/question.service';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../core/service/auth.service';
 
 @Component({
   selector: 'app-question-list',
@@ -14,7 +15,7 @@ export class QuestionListComponent implements OnInit{
 
   questions: Question[] = [];
 
-  constructor(private questionService: QuestionService) { }
+  constructor(private questionService: QuestionService, public authService: AuthService) { }
 
   @Input() description: string= '';
 
@@ -34,6 +35,26 @@ export class QuestionListComponent implements OnInit{
     });
   }
 
+
+ get canAddQuestion(): boolean {
+  const ruoli = this.authService.userRole();
+  
+  
+  const isW = this.authService.isWriter();
+  const isP = this.authService.isPlayer();
+  const isA = this.authService.isAdmin();
+  
+  
+  return isW || isP || isA;
+}
+
+get canAddDetails(): boolean {
+  const ruoli = this.authService.userRole();
+  const isR = this.authService.isReviewer();
+  const isA = this.authService.isAdmin();
+
+  return isR || isA;
+}
 
 
 }
