@@ -41,7 +41,6 @@ export class AuthService {
       tap(response => {
         this.storage.set('token', response.data.token);
         this.storage.set('username', response.data.username);
-
       }),
       switchMap(() => this.getCurrentUserNameAndLastName()),
         tap((userInfo: AuthResponse) => {
@@ -49,8 +48,6 @@ export class AuthService {
           const initials = (user.name.charAt(0) + user.surname.charAt(0)).toUpperCase();
           this.storage.set('initials', initials);
           this.initialsSubject.next(initials);
-          this.storage.set('roles', userInfo.data.roles);
-                    
         })
     );
   }

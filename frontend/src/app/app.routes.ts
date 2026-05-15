@@ -4,7 +4,7 @@ import { QuestionCreatorComponent } from './features/question-creator/question-c
 import { AuthComponent } from './features/authentication/auth/auth.component';
 import { LoginComponent } from './features/authentication/login/login.component';
 import { RegisterComponent } from './features/authentication/register/register.component';
-import { QuestionListComponent } from './features/question-list/question-list.component';
+import { QuestionListComponent } from './features/quiz/question-list.component';
 import { authGuard } from './core/guards/auth-guard';
 import { BackofficeComponent } from './features/backoffice/backoffice';
 

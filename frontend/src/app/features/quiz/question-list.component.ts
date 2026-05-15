@@ -57,4 +57,9 @@ get canAddDetails(): boolean {
 }
 
 
+vaiInDettaglio(){
+
+
+}
+
 }
